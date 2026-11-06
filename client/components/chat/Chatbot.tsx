@@ -132,47 +132,111 @@ In the meantime, you can:
   };
 
   const formatMessage = (content: string) => {
-    // Simple markdown-like formatting
-    return content
-      .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-      .replace(/\*(.*?)\*/g, "<em>$1</em>")
-      .replace(/•/g, "•")
-      .split("\n")
-      .map((line, index) => (
-        <span key={index}>
-          <span dangerouslySetInnerHTML={{ __html: line }} />
-          {index < content.split("\n").length - 1 && <br />}
-        </span>
-      ));
+    // Process markdown formatting into rich, legible components
+    const lines = content.split("\n");
+    return (
+      <div className="space-y-1">
+        {lines.map((line, index) => {
+          const trimmed = line.trim();
+
+          // Horizontal rule
+          if (trimmed === "---") {
+            return <hr key={index} className="my-2 border-border/60" />;
+          }
+
+          // Headers
+          if (line.startsWith("### ")) {
+            return (
+              <h4 key={index} className="text-xs font-bold text-foreground mt-2 mb-1 uppercase tracking-wider text-primary">
+                {line.replace(/^###\s+/, "")}
+              </h4>
+            );
+          }
+          if (line.startsWith("## ")) {
+            return (
+              <h3 key={index} className="text-sm font-bold text-foreground mt-2.5 mb-1 text-primary">
+                {line.replace(/^##\s+/, "")}
+              </h3>
+            );
+          }
+
+          // HTML formatted line for bold, italic, and inline code
+          const formattedLine = line
+            .replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-foreground">$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em class="italic opacity-90">$1</em>')
+            .replace(/`([^`]+)`/g, '<code class="px-1 py-0.5 rounded bg-muted/80 text-primary font-mono text-[11px]">$1</code>');
+
+          // Bullet points
+          if (line.startsWith("• ") || line.startsWith("- ") || line.startsWith("* ")) {
+            const bulletContent = formattedLine.replace(/^[•\-\*]\s+/, "");
+            return (
+              <div key={index} className="flex items-start gap-1.5 pl-1 my-0.5">
+                <span className="text-primary mt-1 text-[10px] leading-none">•</span>
+                <span className="flex-1" dangerouslySetInnerHTML={{ __html: bulletContent }} />
+              </div>
+            );
+          }
+
+          // Numbered lists
+          const numberedMatch = line.match(/^(\d+)\.\s+(.*)/);
+          if (numberedMatch) {
+            const num = numberedMatch[1];
+            const textContent = numberedMatch[2]
+              .replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-foreground">$1</strong>')
+              .replace(/\*(.*?)\*/g, '<em class="italic opacity-90">$1</em>')
+              .replace(/`([^`]+)`/g, '<code class="px-1 py-0.5 rounded bg-muted/80 text-primary font-mono text-[11px]">$1</code>');
+            return (
+              <div key={index} className="flex items-start gap-1.5 pl-1 my-0.5">
+                <span className="text-primary font-semibold text-[11px] min-w-[14px]">{num}.</span>
+                <span className="flex-1" dangerouslySetInnerHTML={{ __html: textContent }} />
+              </div>
+            );
+          }
+
+          // Empty line
+          if (!trimmed) {
+            return <div key={index} className="h-1" />;
+          }
+
+          // Standard paragraph
+          return (
+            <p key={index} className="my-0.5 leading-relaxed">
+              <span dangerouslySetInnerHTML={{ __html: formattedLine }} />
+            </p>
+          );
+        })}
+      </div>
+    );
   };
 
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-end p-4 pointer-events-none">
-      <Card className="w-full max-w-md h-[600px] pointer-events-auto shadow-2xl border-primary/20">
-        <CardHeader className="pb-3 bg-primary/5 border-b">
+      <Card className="w-full max-w-md h-[580px] pointer-events-auto shadow-2xl border-border/80 bg-card flex flex-col overflow-hidden animate-scale-in">
+        <CardHeader className="pb-3 pt-3 px-4 bg-muted/30 border-b border-border/60">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/20">
-                <Bot className="h-5 w-5 text-primary" />
+            <div className="flex items-center space-x-2.5">
+              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 text-primary">
+                <Bot className="h-4 w-4" />
               </div>
               <div>
-                <CardTitle className="text-lg">CyberSafe AI</CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  Cybersecurity Assistant
+                <CardTitle className="text-sm font-semibold text-foreground">CyberSafe AI</CardTitle>
+                <p className="text-[11px] text-muted-foreground flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                  SOC Analyst Assistant
                 </p>
               </div>
             </div>
-            <div className="flex items-center space-x-2">
-              <Button variant="ghost" size="sm" onClick={onClose}>
+            <div className="flex items-center space-x-1">
+              <Button variant="ghost" size="sm" onClick={onClose} className="h-7 w-7 p-0 rounded-lg text-muted-foreground hover:text-foreground">
                 <X className="h-4 w-4" />
               </Button>
             </div>
           </div>
         </CardHeader>
 
-        <CardContent className="p-0 flex flex-col h-[calc(600px-80px)]">
+        <CardContent className="p-0 flex flex-col flex-1 overflow-hidden">
           {/* Messages */}
           <ScrollArea className="flex-1 p-4" ref={scrollAreaRef}>
             <div className="space-y-4">
@@ -204,13 +268,13 @@ In the meantime, you can:
                     }`}
                   >
                     <div
-                      className={`p-3 rounded-lg ${
+                      className={`p-3 rounded-xl text-xs leading-relaxed ${
                         message.role === "user"
                           ? "bg-primary text-primary-foreground ml-auto"
-                          : "bg-muted"
+                          : "bg-muted/40 border border-border/60 text-foreground"
                       }`}
                     >
-                      <div className="text-sm">
+                      <div className="text-xs">
                         {formatMessage(message.content)}
                       </div>
                     </div>

@@ -15,13 +15,10 @@ import {
   Newspaper,
   Search,
   Clock,
-  ExternalLink,
-  AlertTriangle,
   Shield,
-  Zap,
   RefreshCw,
   Loader2,
-  Filter,
+  Eye,
 } from "lucide-react";
 import { newsService, NewsArticle } from "@/lib/newsService";
 
@@ -42,17 +39,13 @@ export default function News() {
     "Vulnerability",
     "Malware",
     "APT",
-    "IoT Security",
     "Cloud Security",
-    "Mobile Security",
   ];
 
-  // Load news on component mount
   useEffect(() => {
     loadLatestNews();
   }, []);
 
-  // Filter articles based on search and category
   useEffect(() => {
     let filtered = newsArticles;
 
@@ -78,8 +71,6 @@ export default function News() {
     try {
       setIsLoading(true);
       const articles = await newsService.fetchLatestCyberSecurityNews();
-
-      // Add overviews to all articles
       const articlesWithOverviews = articles.map((article) => ({
         ...article,
         overview: newsService.getFallbackOverview(article),
@@ -97,14 +88,10 @@ export default function News() {
   const handleRefresh = async () => {
     try {
       setIsRefreshing(true);
-      // Clear existing articles immediately to show refresh is working
       setNewsArticles([]);
       setFilteredArticles([]);
 
-      // Force fresh content generation
       const articles = await newsService.fetchLatestCyberSecurityNews();
-
-      // Add overviews to all articles
       const articlesWithOverviews = articles.map((article) => ({
         ...article,
         overview: newsService.getFallbackOverview(article),
@@ -112,12 +99,6 @@ export default function News() {
 
       setNewsArticles(articlesWithOverviews);
       setLastUpdated(new Date());
-
-      console.log(
-        "News refreshed successfully with",
-        articlesWithOverviews.length,
-        "new articles",
-      );
     } catch (error) {
       console.error("Failed to refresh news:", error);
     } finally {
@@ -129,87 +110,72 @@ export default function News() {
     setSelectedCategory(category === "All" ? null : category);
   };
 
-  const getSeverityColor = (severity: string) => {
+  const getSeverityVariant = (severity: string): "default" | "secondary" | "destructive" | "outline" => {
     switch (severity) {
       case "Critical":
         return "destructive";
       case "High":
-        return "warning";
+        return "destructive";
       case "Medium":
         return "secondary";
       default:
-        return "secondary";
-    }
-  };
-
-  const getSeverityIcon = (severity: string) => {
-    switch (severity) {
-      case "Critical":
-        return AlertTriangle;
-      case "High":
-        return Zap;
-      default:
-        return Shield;
+        return "outline";
     }
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <main className="container px-4 py-8">
+      <main className="container px-4 py-12 flex-1">
         {/* Header Section */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center rounded-full border px-3 py-1 text-sm font-medium bg-primary/10 text-primary border-primary/20 mb-4">
-            <Newspaper className="mr-2 h-4 w-4" />
-            Cybersecurity News Center
+        <div className="text-center max-w-2xl mx-auto mb-12 animate-fade-up">
+          <div className="inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium bg-muted/50 text-muted-foreground border-border/60 mb-4">
+            <Newspaper className="mr-1.5 h-3.5 w-3.5 text-primary" />
+            Threat Telemetry & Feed
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Latest Security News
+          <h1 className="text-3xl md:text-5xl font-bold tracking-tight mb-4 text-foreground">
+            Security Intelligence
           </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Stay informed with real-time cybersecurity news, threat
-            intelligence, and security updates from trusted sources worldwide
+          <p className="text-base text-muted-foreground leading-relaxed">
+            Real-time cybersecurity advisories, disclosure reports, and emerging attack vector summaries.
           </p>
         </div>
 
         {/* Search and Filters */}
-        <div className="flex flex-col gap-4 mb-8">
-          {/* Search and Refresh */}
-          <div className="flex flex-col md:flex-row gap-4">
+        <div className="space-y-4 mb-8 max-w-5xl mx-auto animate-fade-up delay-100">
+          <div className="flex flex-col md:flex-row gap-3">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search cybersecurity news..."
-                className="pl-10"
+                placeholder="Search advisories, CVEs, or attack tactics..."
+                className="pl-9 h-9 text-sm"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2">
               <Button
                 onClick={handleRefresh}
                 disabled={isRefreshing}
                 size="sm"
                 variant="outline"
+                className="h-9 text-xs border-border/60"
               >
                 {isRefreshing ? (
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />
                 ) : (
-                  <RefreshCw className="h-4 w-4 mr-2" />
+                  <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
                 )}
-                Refresh News
+                Refresh
               </Button>
-              <Badge variant="outline" className="px-3 py-1">
-                <Clock className="h-3 w-3 mr-1" />
-                {lastUpdated
-                  ? `Updated ${lastUpdated.toLocaleTimeString()}`
-                  : "Loading..."}
-              </Badge>
+              <span className="text-xs text-muted-foreground hidden sm:inline-block">
+                {lastUpdated ? `Sync: ${lastUpdated.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : ""}
+              </span>
             </div>
           </div>
 
           {/* Category Filters */}
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1.5">
             {categories.map((category) => (
               <Button
                 key={category}
@@ -220,6 +186,7 @@ export default function News() {
                     : "outline"
                 }
                 size="sm"
+                className="h-7 text-xs px-2.5 rounded-full"
                 onClick={() => handleCategorySelect(category)}
               >
                 {category}
@@ -227,40 +194,25 @@ export default function News() {
             ))}
           </div>
 
-          {/* Results count */}
-          <div className="flex items-center justify-between text-sm text-muted-foreground">
-            <span>
-              Showing {filteredArticles.length} of {newsArticles.length}{" "}
-              articles
-            </span>
-            <span>
-              {filteredArticles.length > 0 && (
-                <>
-                  Latest:{" "}
-                  {new Date(filteredArticles[0]?.publishedAt).toLocaleString()}
-                </>
-              )}
-            </span>
+          <div className="text-xs text-muted-foreground pt-1">
+            Showing {filteredArticles.length} of {newsArticles.length} advisories
           </div>
         </div>
 
-        {/* Loading State */}
+        {/* Loading Skeleton */}
         {isLoading && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
-            {[...Array(6)].map((_, index) => (
-              <Card key={index} className="animate-pulse">
-                <CardHeader className="pb-4">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="h-6 w-20 bg-muted rounded" />
-                    <div className="h-6 w-24 bg-muted rounded" />
-                  </div>
-                  <div className="h-6 w-3/4 bg-muted rounded mb-2" />
-                  <div className="h-4 w-full bg-muted rounded mb-1" />
-                  <div className="h-4 w-2/3 bg-muted rounded" />
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="h-8 w-full bg-muted rounded" />
-                </CardContent>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 max-w-5xl mx-auto">
+            {[...Array(4)].map((_, index) => (
+              <Card key={index} className="border border-border/60 bg-card p-5 space-y-4 animate-pulse">
+                <div className="flex justify-between">
+                  <div className="h-4 w-20 bg-muted/70 rounded" />
+                  <div className="h-4 w-16 bg-muted/70 rounded" />
+                </div>
+                <div className="h-5 w-3/4 bg-muted/70 rounded" />
+                <div className="space-y-2">
+                  <div className="h-3.5 w-full bg-muted/50 rounded" />
+                  <div className="h-3.5 w-2/3 bg-muted/50 rounded" />
+                </div>
               </Card>
             ))}
           </div>
@@ -268,116 +220,64 @@ export default function News() {
 
         {/* News Grid */}
         {!isLoading && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
-            {filteredArticles.map((article) => {
-              const SeverityIcon = getSeverityIcon(article.severity);
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 max-w-5xl mx-auto animate-fade-up delay-200">
+            {filteredArticles.map((article) => (
+              <Card
+                key={article.id}
+                className="border border-border/60 bg-card hover:border-border transition-all duration-300 flex flex-col justify-between"
+              >
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between mb-2">
+                    <Badge
+                      variant={getSeverityVariant(article.severity)}
+                      className="text-xs font-normal"
+                    >
+                      {article.severity}
+                    </Badge>
+                    <span className="text-xs text-muted-foreground">{article.category}</span>
+                  </div>
 
-              return (
-                <Card
-                  key={article.id}
-                  className="group hover:shadow-lg transition-all duration-300"
-                >
-                  <CardHeader className="pb-4">
-                    <div className="flex items-start justify-between mb-3">
-                      <Badge
-                        variant={getSeverityColor(article.severity) as any}
-                        className="mb-2"
-                      >
-                        <SeverityIcon className="h-3 w-3 mr-1" />
-                        {article.severity}
-                      </Badge>
-                      <Badge variant="outline" className="text-xs">
-                        {article.category}
-                      </Badge>
-                    </div>
+                  <CardTitle className="text-base font-semibold leading-snug">
+                    {article.title}
+                  </CardTitle>
 
-                    <CardTitle className="text-xl group-hover:text-primary transition-colors">
-                      {article.title}
-                    </CardTitle>
+                  <CardDescription className="text-xs text-muted-foreground leading-relaxed line-clamp-2 mt-1">
+                    {article.summary}
+                  </CardDescription>
+                </CardHeader>
 
-                    <CardDescription className="text-base leading-relaxed">
-                      {article.summary}
-                    </CardDescription>
-                  </CardHeader>
-
-                  <CardContent className="pt-0">
-                    <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
-                      <div className="flex items-center">
-                        <Clock className="h-4 w-4 mr-1" />
-                        {new Date(article.publishedAt).toLocaleString()}
+                <CardContent className="pt-0">
+                  <div className="space-y-3 pt-3 border-t border-border/40">
+                    <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+                      <div className="flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        {new Date(article.publishedAt).toLocaleDateString()}
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Eye className="h-3 w-3" />
+                        {article.views.toLocaleString()} reads
                       </div>
                       <span>{article.source}</span>
                     </div>
 
-                    <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
-                      <span>{article.views.toLocaleString()} views</span>
-                    </div>
-
-                    {/* Security Overview Section */}
-                    <div className="border-t pt-4">
-                      <div className="bg-muted/50 rounded-lg p-3">
-                        <div className="flex items-center mb-2">
-                          <Shield className="h-4 w-4 text-primary mr-2" />
-                          <span className="text-sm font-medium text-primary">
-                            Security Overview
-                          </span>
+                    {/* Overview snippet */}
+                    {article.overview && (
+                      <div className="p-3 rounded-lg bg-muted/30 border border-border/40 text-xs">
+                        <div className="flex items-center gap-1.5 font-medium text-foreground mb-1">
+                          <Shield className="h-3.5 w-3.5 text-primary" />
+                          Security Context
                         </div>
-                        <p className="text-sm text-muted-foreground leading-relaxed">
+                        <p className="text-muted-foreground text-[11px] leading-relaxed line-clamp-2">
                           {article.overview}
                         </p>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         )}
-
-        {/* No Results */}
-        {!isLoading && filteredArticles.length === 0 && (
-          <div className="text-center py-12">
-            <div className="flex items-center justify-center w-16 h-16 rounded-full bg-muted mx-auto mb-4">
-              <Search className="h-8 w-8 text-muted-foreground" />
-            </div>
-            <h3 className="text-lg font-semibold mb-2">No articles found</h3>
-            <p className="text-muted-foreground mb-4">
-              Try adjusting your search criteria or browse all categories.
-            </p>
-            <Button
-              onClick={() => {
-                setSearchQuery("");
-                setSelectedCategory(null);
-              }}
-            >
-              Clear Filters
-            </Button>
-          </div>
-        )}
-
-        {/* Load More */}
-        <div className="text-center">
-          <Button size="lg" variant="outline">
-            Load More Articles
-          </Button>
-        </div>
-
-        {/* Coming Soon Notice */}
-        <div className="mt-16 text-center">
-          <Card className="inline-block p-8 bg-muted/50">
-            <div className="flex items-center justify-center w-16 h-16 rounded-full bg-primary/20 mx-auto mb-4">
-              <Newspaper className="h-8 w-8 text-primary" />
-            </div>
-            <h3 className="text-xl font-semibold mb-2">
-              Real-time News Feed Coming Soon
-            </h3>
-            <p className="text-muted-foreground max-w-md">
-              We're working on integrating live news feeds from major
-              cybersecurity sources with AI-powered analysis and personalized
-              recommendations.
-            </p>
-          </Card>
-        </div>
       </main>
       <Footer />
     </div>

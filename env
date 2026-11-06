@@ -1,1 +1,15 @@
-.-.. ..- -. / .-.. . .-.. .
+# ==============================================================================
+# Cybersecurity Awareness Portal - Environment Configuration
+# ==============================================================================
+
+# Firebase Configuration
+VITE_FIREBASE_API_KEY=AIzaSyCOcaMnz_VN9W5HRHjyIz4bEjc51JX-7ow
+VITE_FIREBASE_AUTH_DOMAIN=cyber-security-portal-c3ee2.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=cyber-security-portal-c3ee2
+VITE_FIREBASE_STORAGE_BUCKET=cyber-security-portal-c3ee2.firebasestorage.app
+VITE_FIREBASE_MESSAGING_SENDER_ID=188482936032
+VITE_FIREBASE_APP_ID=1:188482936032:web:45bc6a28f09c06dc1a4485
+VITE_FIREBASE_MEASUREMENT_ID=G-6JV8JRF14H
+
+# Gemini AI API Configuration
+VITE_GEMINI_API_KEY=your_gemini_api_key_here

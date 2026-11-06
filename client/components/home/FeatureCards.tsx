@@ -12,11 +12,7 @@ import {
   HelpCircle,
   Newspaper,
   BarChart3,
-  Users,
   ArrowRight,
-  Lock,
-  AlertTriangle,
-  Brain,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -25,107 +21,99 @@ export function FeatureCards() {
     {
       title: "Learning Center",
       description:
-        "Comprehensive cybersecurity courses from beginner to advanced levels with hands-on exercises.",
+        "Comprehensive cybersecurity courses from foundational concepts to advanced red-team exercises.",
       icon: BookOpen,
       href: "/learning",
-      color: "text-blue-600",
-      bgColor: "bg-blue-50",
-      darkBgColor: "dark:bg-blue-950/50",
       stats: "50+ Courses",
+      delay: "delay-100",
     },
     {
       title: "Threat Intelligence",
       description:
-        "Stay informed about the latest cybersecurity threats, attack vectors, and protection strategies.",
+        "Live CVE tracking, emerging attack vectors, and MITRE ATT&CK mitigation playbooks.",
       icon: Shield,
       href: "/threats",
-      color: "text-red-600",
-      bgColor: "bg-red-50",
-      darkBgColor: "dark:bg-red-950/50",
-      stats: "Live Updates",
+      stats: "Real-time Telemetry",
+      delay: "delay-200",
     },
     {
       title: "Security Quiz",
       description:
-        "Test your cybersecurity knowledge with interactive quizzes and track your progress over time.",
+        "Assess your tactical security posture with scenario-driven interactive evaluations.",
       icon: HelpCircle,
       href: "/quiz",
-      color: "text-green-600",
-      bgColor: "bg-green-50",
-      darkBgColor: "dark:bg-green-950/50",
-      stats: "100+ Questions",
+      stats: "100+ Scenarios",
+      delay: "delay-300",
     },
     {
       title: "News Center",
       description:
-        "Real-time cybersecurity news aggregated from trusted sources worldwide with AI analysis.",
+        "Aggregated global threat disclosures, zero-day advisories, and breach analyses.",
       icon: Newspaper,
       href: "/news",
-      color: "text-purple-600",
-      bgColor: "bg-purple-50",
-      darkBgColor: "dark:bg-purple-950/50",
-      stats: "24/7 Updates",
+      stats: "24/7 Intel Feed",
+      delay: "delay-400",
     },
     {
-      title: "Dashboard",
+      title: "Defender Dashboard",
       description:
-        "Track your learning progress, quiz scores, and security knowledge improvements.",
+        "Track certification status, security clearance progression, and completed modules.",
       icon: BarChart3,
       href: "/dashboard",
-      color: "text-orange-600",
-      bgColor: "bg-orange-50",
-      darkBgColor: "dark:bg-orange-950/50",
-      stats: "Personal Stats",
+      stats: "Personal Metrics",
+      delay: "delay-500",
     },
   ];
 
   return (
-    <section className="py-20 bg-muted/30">
+    <section className="py-24 bg-background relative">
       <div className="container px-4">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+        <div className="text-center mb-16 animate-fade-up">
+          <div className="inline-flex items-center gap-1.5 text-xs text-primary font-medium uppercase tracking-wider mb-2">
+            Defense Capabilities
+          </div>
+          <h2 className="text-3xl md:text-4xl font-bold mb-3 tracking-tight text-foreground">
             Complete Cybersecurity Platform
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Everything you need to learn, practice, and stay current with
-            cybersecurity
+          <p className="text-base text-muted-foreground max-w-xl mx-auto">
+            Everything your organization needs to build defensive resilience, assess risks, and stay ahead of adversaries.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 max-w-6xl mx-auto">
           {features.map((feature) => {
             const IconComponent = feature.icon;
 
             return (
               <Card
                 key={feature.title}
-                className="relative group hover:shadow-lg transition-all duration-300 border-0 bg-card/50 backdrop-blur-sm"
+                className={`group border border-border/80 bg-card hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5 transition-all duration-300 animate-fade-up ${feature.delay}`}
               >
-                <CardHeader className="pb-4">
-                  <div
-                    className={`inline-flex items-center justify-center w-12 h-12 rounded-lg ${feature.bgColor} ${feature.darkBgColor} mb-4`}
-                  >
-                    <IconComponent className={`h-6 w-6 ${feature.color}`} />
+                <CardHeader className="pb-3">
+                  <div className="w-10 h-10 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center mb-4 text-primary group-hover:scale-105 transition-transform">
+                    <IconComponent className="h-5 w-5" />
                   </div>
-                  <CardTitle className="text-xl">{feature.title}</CardTitle>
-                  <CardDescription className="text-base">
+                  <CardTitle className="text-base font-semibold group-hover:text-primary transition-colors">
+                    {feature.title}
+                  </CardTitle>
+                  <CardDescription className="text-xs leading-relaxed text-muted-foreground line-clamp-2">
                     {feature.description}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="pt-0">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-muted-foreground">
+                  <div className="flex items-center justify-between pt-3 border-t border-border/50">
+                    <span className="text-xs font-mono text-muted-foreground">
                       {feature.stats}
                     </span>
                     <Button
                       asChild
                       variant="ghost"
                       size="sm"
-                      className="group/btn"
+                      className="group/btn h-8 px-2 text-xs font-medium text-primary hover:text-primary hover:bg-primary/10"
                     >
                       <Link to={feature.href}>
                         Explore
-                        <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
+                        <ArrowRight className="ml-1.5 h-3.5 w-3.5 transition-transform group-hover/btn:translate-x-1" />
                       </Link>
                     </Button>
                   </div>
@@ -136,30 +124,18 @@ export function FeatureCards() {
         </div>
 
         {/* Bottom CTA */}
-        <div className="text-center mt-16">
-          <Card className="inline-block p-8 bg-gradient-to-r from-primary/10 to-blue-600/10 border-primary/20">
-            <div className="flex items-center justify-center space-x-4 mb-4">
-              <div className="flex items-center justify-center w-12 h-12 rounded-full bg-primary/20">
-                <Lock className="h-6 w-6 text-primary" />
-              </div>
-              <div className="flex items-center justify-center w-12 h-12 rounded-full bg-warning/20">
-                <AlertTriangle className="h-6 w-6 text-warning" />
-              </div>
-              <div className="flex items-center justify-center w-12 h-12 rounded-full bg-success/20">
-                <Brain className="h-6 w-6 text-success" />
-              </div>
-            </div>
-            <h3 className="text-2xl font-bold mb-2">
-              Ready to Secure Your Future?
+        <div className="text-center mt-20 animate-fade-up">
+          <div className="inline-block p-8 md:p-10 rounded-2xl bg-gradient-to-b from-primary/10 via-card to-card border border-primary/25 max-w-lg shadow-xl shadow-primary/5">
+            <h3 className="text-xl font-semibold mb-2 text-foreground">
+              Ready to Upgrade Your Threat Posture?
             </h3>
-            <p className="text-muted-foreground mb-6 max-w-md">
-              Join thousands of professionals building their cybersecurity
-              expertise
+            <p className="text-xs text-muted-foreground mb-6 leading-relaxed">
+              Join thousands of SOC operators, threat hunters, and security professionals worldwide.
             </p>
-            <Button size="lg" className="px-8" asChild>
+            <Button size="lg" className="rounded-full px-8 h-10 text-sm shadow-md shadow-primary/20" asChild>
               <Link to="/learning">Get Started Free</Link>
             </Button>
-          </Card>
+          </div>
         </div>
       </div>
     </section>

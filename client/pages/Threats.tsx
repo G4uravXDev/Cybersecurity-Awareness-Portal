@@ -21,9 +21,7 @@ import {
   Bug,
   Lock,
   Eye,
-  FileX,
   Wifi,
-  Smartphone,
   Globe,
   Database,
   ArrowRight,
@@ -31,6 +29,7 @@ import {
   Clock,
   Target,
   Activity,
+  CheckCircle2,
 } from "lucide-react";
 import {
   threatsData,
@@ -42,7 +41,6 @@ export default function Threats() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("");
 
-  // Filter threats based on search and category
   const filteredThreats = threatsData.filter((threat) => {
     const matchesSearch =
       threat.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -56,7 +54,6 @@ export default function Threats() {
   });
 
   const currentThreatLevel = getCurrentThreatLevel();
-  const threatCategories = getAllThreatCategories();
 
   const categoryData = [
     {
@@ -64,9 +61,7 @@ export default function Threats() {
       icon: Bug,
       count: threatsData.filter((t) => t.category.includes("Malware")).length,
       trend: "+12%",
-      color: "text-red-600",
-      bgColor: "bg-red-50 dark:bg-red-950/50",
-      description: "Malicious software including viruses, worms, and trojans",
+      description: "Malicious payloads, worms, trojans, and credential stealers.",
     },
     {
       name: "Social Engineering",
@@ -75,9 +70,7 @@ export default function Threats() {
         t.category.includes("Social Engineering"),
       ).length,
       trend: "+8%",
-      color: "text-orange-600",
-      bgColor: "bg-orange-50 dark:bg-orange-950/50",
-      description: "Social engineering attacks targeting user credentials",
+      description: "Phishing, spear-phishing, and impersonation attempts.",
     },
     {
       name: "Ransomware",
@@ -85,298 +78,219 @@ export default function Threats() {
       count: threatsData.filter((t) => t.category.includes("Ransomware"))
         .length,
       trend: "+23%",
-      color: "text-purple-600",
-      bgColor: "bg-purple-50 dark:bg-purple-950/50",
-      description: "Encryption-based extortion attacks",
+      description: "Cryptographic extortion vectors and double-extortion campaigns.",
     },
     {
       name: "Network Security",
       icon: Wifi,
       count: threatsData.filter((t) => t.category.includes("Network")).length,
       trend: "+5%",
-      color: "text-blue-600",
-      bgColor: "bg-blue-50 dark:bg-blue-950/50",
-      description: "DDoS, man-in-the-middle, and network intrusions",
+      description: "Volumetric DDoS, MitM interception, and port exploits.",
     },
     {
       name: "Cloud Security",
       icon: Database,
       count: threatsData.filter((t) => t.category.includes("Cloud")).length,
       trend: "+15%",
-      color: "text-green-600",
-      bgColor: "bg-green-50 dark:bg-green-950/50",
-      description: "Cloud infrastructure and service attacks",
+      description: "Misconfigured storage, IAM privilege escalation, and token leakage.",
     },
     {
       name: "Web Security",
       icon: Globe,
       count: threatsData.filter((t) => t.category.includes("Web")).length,
       trend: "+7%",
-      color: "text-indigo-600",
-      bgColor: "bg-indigo-50 dark:bg-indigo-950/50",
-      description: "SQL injection, XSS, and web application attacks",
+      description: "OWASP Top 10 vulnerabilities including SQLi and SSRF attacks.",
     },
   ];
 
   const protectionSteps = [
     {
-      title: "Multi-Factor Authentication",
-      description: "Enable MFA on all critical accounts and systems",
-      priority: "High",
-      difficulty: "Easy",
-      timeToImplement: "1 hour",
+      title: "Multi-Factor Authentication (MFA)",
+      description: "Enforce hardware or authenticator app MFA across all endpoints and accounts.",
+      priority: "Critical",
+      time: "Immediate",
     },
     {
-      title: "Regular Security Updates",
-      description: "Keep all software and systems updated with latest patches",
+      title: "Vulnerability Patching Cadence",
+      description: "Audit software dependencies and apply vendor patches within 72 hours of disclosure.",
       priority: "High",
-      difficulty: "Easy",
-      timeToImplement: "Ongoing",
+      time: "Weekly",
     },
     {
-      title: "Employee Security Training",
-      description: "Train staff to recognize and respond to security threats",
+      title: "Simulated Phishing Drills",
+      description: "Conduct monthly phishing simulation drills to measure organizational click-rates.",
       priority: "High",
-      difficulty: "Medium",
-      timeToImplement: "1 week",
+      time: "Monthly",
     },
     {
-      title: "Backup and Recovery Plan",
-      description:
-        "Implement comprehensive backup strategy with offline copies",
+      title: "Immutable Offline Backups",
+      description: "Maintain write-once-read-many (WORM) segmented offline backups.",
+      priority: "High",
+      time: "Continuous",
+    },
+    {
+      title: "Zero-Trust Microsegmentation",
+      description: "Restrict lateral subnet movement through identity-aware network firewalls.",
       priority: "Medium",
-      difficulty: "Medium",
-      timeToImplement: "2-3 days",
-    },
-    {
-      title: "Network Segmentation",
-      description: "Isolate critical systems and limit lateral movement",
-      priority: "Medium",
-      difficulty: "Hard",
-      timeToImplement: "1-2 weeks",
+      time: "Quarterly",
     },
   ];
 
-  const getSeverityColor = (severity: string) => {
+  const getSeverityVariant = (severity: string): "default" | "secondary" | "destructive" | "outline" => {
     switch (severity) {
       case "Critical":
         return "destructive";
       case "High":
-        return "warning";
-      case "Medium":
-        return "secondary";
-      default:
-        return "secondary";
-    }
-  };
-
-  const getTrendIcon = (trend: string) => {
-    return trend === "Increasing" ? TrendingUp : Activity;
-  };
-
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case "High":
         return "destructive";
       case "Medium":
-        return "warning";
-      case "Low":
         return "secondary";
       default:
-        return "secondary";
+        return "outline";
     }
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <main className="container px-4 py-8">
+      <main className="container px-4 py-12 flex-1">
         {/* Header Section */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center rounded-full border px-3 py-1 text-sm font-medium bg-destructive/10 text-destructive border-destructive/20 mb-4">
-            <AlertTriangle className="mr-2 h-4 w-4" />
-            Threat Intelligence Center
+        <div className="text-center max-w-2xl mx-auto mb-12 animate-fade-up">
+          <div className="inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium bg-muted/50 text-muted-foreground border-border/60 mb-4">
+            <AlertTriangle className="mr-1.5 h-3.5 w-3.5 text-rose-500" />
+            Threat Matrix & Intelligence
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Cybersecurity Threats
+          <h1 className="text-3xl md:text-5xl font-bold tracking-tight mb-4 text-foreground">
+            Threat Intelligence
           </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Stay informed about the latest cybersecurity threats and learn how
-            to protect your organization from emerging attacks
+          <p className="text-base text-muted-foreground leading-relaxed">
+            Monitor emerging adversarial tactics, techniques, and procedures (TTPs) across global telemetry.
           </p>
         </div>
 
-        {/* Search and Current Status */}
-        <div className="flex flex-col md:flex-row gap-4 mb-8">
+        {/* Search & Top Status */}
+        <div className="flex flex-col md:flex-row gap-3 mb-8 max-w-5xl mx-auto animate-fade-up delay-100">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search threats..."
-              className="pl-10"
+              placeholder="Filter threat database by vector, attack type, or name..."
+              className="pl-9 h-9 text-sm"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <div className="flex items-center space-x-4">
-            <Badge
-              variant={currentThreatLevel.color as any}
-              className="px-3 py-1"
-            >
-              <AlertTriangle className="h-3 w-3 mr-1" />
-              Threat Level: {currentThreatLevel.level}
-            </Badge>
-            <Badge variant="outline" className="px-3 py-1">
-              <Clock className="h-3 w-3 mr-1" />
-              Last Updated: 2 min ago
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className="h-9 px-3 text-xs font-normal border-border/60">
+              <span className="w-2 h-2 rounded-full bg-amber-500 mr-2" />
+              Global Threat Level: {currentThreatLevel.level}
             </Badge>
           </div>
         </div>
 
-        <Tabs defaultValue="current" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="current">Current Threats</TabsTrigger>
-            <TabsTrigger value="categories">Categories</TabsTrigger>
-            <TabsTrigger value="protection">Protection</TabsTrigger>
-            <TabsTrigger value="intelligence">Intelligence</TabsTrigger>
+        <Tabs defaultValue="current" className="max-w-5xl mx-auto space-y-8 animate-fade-up delay-200">
+          <TabsList className="grid w-full grid-cols-3 max-w-md mx-auto h-9 bg-muted/60 p-1">
+            <TabsTrigger value="current" className="text-xs">Active Threats</TabsTrigger>
+            <TabsTrigger value="categories" className="text-xs">Categories</TabsTrigger>
+            <TabsTrigger value="protection" className="text-xs">Hardening</TabsTrigger>
           </TabsList>
 
           {/* Current Threats Tab */}
           <TabsContent value="current" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {filteredThreats.slice(0, 20).map((threat) => {
-                const getSeverityIcon = (severity: string) => {
-                  switch (severity) {
-                    case "Critical":
-                      return AlertTriangle;
-                    case "High":
-                      return Zap;
-                    case "Medium":
-                      return Activity;
-                    case "Low":
-                      return Shield;
-                    default:
-                      return Activity;
-                  }
-                };
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {filteredThreats.slice(0, 16).map((threat) => (
+                <Card
+                  key={threat.id}
+                  className="border border-border/60 bg-card hover:border-border hover:shadow-sm hover:-translate-y-0.5 transition-all duration-300 flex flex-col justify-between"
+                >
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <Badge
+                        variant={getSeverityVariant(threat.severity)}
+                        className="text-[11px] font-normal"
+                      >
+                        {threat.severity}
+                      </Badge>
+                      <span className="text-xs text-muted-foreground">{threat.category}</span>
+                    </div>
 
-                const IconComponent = getSeverityIcon(threat.severity);
+                    <CardTitle className="text-base font-semibold leading-snug">
+                      {threat.name}
+                    </CardTitle>
+                    <CardDescription className="text-xs leading-relaxed line-clamp-3 text-muted-foreground mt-1">
+                      {threat.description}
+                    </CardDescription>
+                  </CardHeader>
 
-                return (
-                  <Card
-                    key={threat.id}
-                    className="group hover:shadow-lg transition-all duration-300"
-                  >
-                    <CardHeader className="pb-4">
-                      <div className="flex items-start justify-between mb-3">
-                        <div className="flex items-center space-x-3">
-                          <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-destructive/10">
-                            <IconComponent className="h-5 w-5 text-destructive" />
-                          </div>
-                          <div>
-                            <Badge
-                              variant={getSeverityColor(threat.severity) as any}
-                              className="mb-1"
-                            >
-                              {threat.severity}
-                            </Badge>
-                            <Badge variant="outline" className="ml-2">
-                              {threat.category}
-                            </Badge>
-                          </div>
+                  <CardContent className="pt-0">
+                    <div className="space-y-3 pt-3 border-t border-border/40">
+                      {/* Risk Level Bar */}
+                      <div>
+                        <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
+                          <span>Risk Assessment</span>
+                          <span className="font-mono text-foreground font-medium">{threat.riskLevel}%</span>
                         </div>
-                        <div className="flex items-center text-sm text-muted-foreground">
-                          <TrendingUp className="h-4 w-4 mr-1" />
-                          Active
+                        <div className="w-full bg-muted/60 rounded-full h-1.5 overflow-hidden">
+                          <div
+                            className={`h-full rounded-full transition-all duration-500 ${
+                              threat.riskLevel > 75 ? "bg-rose-500" : threat.riskLevel > 50 ? "bg-amber-500" : "bg-primary"
+                            }`}
+                            style={{ width: `${threat.riskLevel}%` }}
+                          />
                         </div>
                       </div>
 
-                      <CardTitle className="text-xl group-hover:text-primary transition-colors">
-                        {threat.name}
-                      </CardTitle>
-                      <CardDescription className="text-base leading-relaxed line-clamp-3">
-                        {threat.description.substring(0, 200)}...
-                      </CardDescription>
-                    </CardHeader>
-
-                    <CardContent className="pt-0">
-                      <div className="space-y-4">
-                        {/* Risk Level */}
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between text-sm">
-                            <span className="font-medium">Risk Level</span>
-                            <span className="font-bold">
-                              {threat.riskLevel}%
-                            </span>
-                          </div>
-                          <div className="w-full bg-muted rounded-full h-2">
-                            <div
-                              className="bg-destructive h-2 rounded-full transition-all duration-500"
-                              style={{ width: `${threat.riskLevel}%` }}
-                            />
-                          </div>
-                        </div>
-
-                        {/* Footer */}
-                        <div className="flex items-center justify-between pt-2">
-                          <span className="text-sm text-muted-foreground">
-                            {threat.recentActivity
-                              ? "Recent activity"
-                              : "Active threat"}
-                          </span>
-                          <Button variant="outline" size="sm" asChild>
-                            <Link to={`/threats/${threat.id}`}>
-                              Learn More
-                              <ArrowRight className="ml-2 h-4 w-4" />
-                            </Link>
-                          </Button>
-                        </div>
+                      <div className="flex items-center justify-between pt-1">
+                        <span className="text-[11px] text-muted-foreground flex items-center gap-1">
+                          <Clock className="h-3 w-3" /> Updated recently
+                        </span>
+                        <Button variant="ghost" size="sm" asChild className="h-7 text-xs px-2 hover:bg-muted/50">
+                          <Link to={`/threats/${threat.id}`}>
+                            Details
+                            <ArrowRight className="ml-1 h-3 w-3" />
+                          </Link>
+                        </Button>
                       </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           </TabsContent>
 
           {/* Categories Tab */}
           <TabsContent value="categories" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
               {categoryData.map((category) => {
                 const IconComponent = category.icon;
 
                 return (
                   <Card
                     key={category.name}
-                    className="group hover:shadow-lg transition-all duration-300 cursor-pointer"
+                    className="border border-border/60 bg-card hover:border-border transition-all duration-300 cursor-pointer"
                     onClick={() =>
                       setSelectedCategory(
                         category.name === selectedCategory ? "" : category.name,
                       )
                     }
                   >
-                    <CardContent className="p-6">
+                    <CardContent className="p-5">
                       <div className="flex items-center justify-between mb-4">
-                        <div
-                          className={`inline-flex items-center justify-center w-12 h-12 rounded-lg ${category.bgColor}`}
-                        >
-                          <IconComponent
-                            className={`h-6 w-6 ${category.color}`}
-                          />
+                        <div className="w-9 h-9 rounded-lg bg-muted/60 flex items-center justify-center text-foreground">
+                          <IconComponent className="h-4 w-4" />
                         </div>
                         <div className="text-right">
-                          <div className="text-2xl font-bold">
+                          <div className="text-xl font-bold tracking-tight">
                             {category.count}
                           </div>
-                          <div className="text-sm text-success">
+                          <span className="text-[11px] text-muted-foreground">
                             {category.trend}
-                          </div>
+                          </span>
                         </div>
                       </div>
 
-                      <h3 className="text-lg font-semibold mb-2">
+                      <h3 className="text-sm font-semibold mb-1 text-foreground">
                         {category.name}
                       </h3>
-                      <p className="text-sm text-muted-foreground mb-4">
+                      <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
                         {category.description}
                       </p>
 
@@ -387,12 +301,11 @@ export default function Threats() {
                             : "outline"
                         }
                         size="sm"
-                        className="w-full group/btn"
+                        className="w-full h-8 text-xs border-border/60"
                       >
                         {selectedCategory === category.name
-                          ? "Clear Filter"
-                          : "Filter Threats"}
-                        <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
+                          ? "Reset Filter"
+                          : "Filter Database"}
                       </Button>
                     </CardContent>
                   </Card>
@@ -401,120 +314,56 @@ export default function Threats() {
             </div>
           </TabsContent>
 
-          {/* Protection Tab */}
+          {/* Hardening Tab */}
           <TabsContent value="protection" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div>
-                <h2 className="text-2xl font-bold mb-6">
-                  Essential Protection Steps
-                </h2>
-                <div className="space-y-4">
+              <div className="space-y-4">
+                <h2 className="text-base font-semibold">Recommended Controls</h2>
+                <div className="space-y-3">
                   {protectionSteps.map((step, index) => (
-                    <Card key={index} className="p-4">
-                      <div className="flex items-start justify-between mb-3">
-                        <div className="flex items-center space-x-3">
-                          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/20 text-primary font-semibold">
-                            {index + 1}
-                          </div>
+                    <Card key={index} className="border border-border/60 bg-card p-4">
+                      <div className="flex items-start justify-between gap-3 mb-1">
+                        <div className="flex items-start gap-2.5">
+                          <CheckCircle2 className="h-4 w-4 text-emerald-500 mt-0.5 shrink-0" />
                           <div>
-                            <h3 className="font-semibold">{step.title}</h3>
-                            <p className="text-sm text-muted-foreground">
+                            <h3 className="font-medium text-sm text-foreground">{step.title}</h3>
+                            <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
                               {step.description}
                             </p>
                           </div>
                         </div>
-                        <Badge
-                          variant={getPriorityColor(step.priority) as any}
-                          size="sm"
-                        >
-                          {step.priority}
+                        <Badge variant="outline" className="text-[10px] shrink-0 border-border/60">
+                          {step.time}
                         </Badge>
-                      </div>
-                      <div className="flex items-center justify-between text-sm text-muted-foreground ml-11">
-                        <span>Difficulty: {step.difficulty}</span>
-                        <span>Time: {step.timeToImplement}</span>
                       </div>
                     </Card>
                   ))}
                 </div>
               </div>
 
-              <div>
-                <h2 className="text-2xl font-bold mb-6">Emergency Response</h2>
-                <Card className="p-6 bg-destructive/5 border-destructive/20">
-                  <div className="space-y-4">
-                    <div className="flex items-center space-x-3">
-                      <AlertTriangle className="h-6 w-6 text-destructive" />
-                      <h3 className="text-lg font-semibold">
-                        Incident Response Checklist
-                      </h3>
-                    </div>
-
-                    <div className="space-y-3">
-                      {[
-                        "Isolate affected systems immediately",
-                        "Document the incident details",
-                        "Notify relevant stakeholders",
-                        "Preserve evidence for investigation",
-                        "Implement containment measures",
-                        "Begin recovery procedures",
-                        "Conduct post-incident review",
-                      ].map((item, index) => (
-                        <div
-                          key={index}
-                          className="flex items-center space-x-3"
-                        >
-                          <div className="w-2 h-2 rounded-full bg-destructive" />
-                          <span className="text-sm">{item}</span>
-                        </div>
-                      ))}
-                    </div>
+              <div className="space-y-4">
+                <h2 className="text-base font-semibold">Incident Response Workflow</h2>
+                <Card className="border border-border/60 bg-muted/20 p-5 space-y-4">
+                  <div className="flex items-center gap-2">
+                    <Shield className="h-4 w-4 text-primary" />
+                    <span className="text-sm font-semibold">Containment Protocols</span>
                   </div>
-                </Card>
 
-                <Card className="mt-6 p-6">
-                  <h3 className="text-lg font-semibold mb-4">
-                    Emergency Contacts
-                  </h3>
-                  <div className="space-y-3 text-sm">
-                    <div>
-                      <span className="font-medium">CERT Team:</span>{" "}
-                      cert@cybersafe.com
-                    </div>
-                    <div>
-                      <span className="font-medium">24/7 Hotline:</span> +1
-                      (555) 123-4567
-                    </div>
-                    <div>
-                      <span className="font-medium">FBI IC3:</span> www.ic3.gov
-                    </div>
-                    <div>
-                      <span className="font-medium">CISA:</span> +1 (888)
-                      282-0870
-                    </div>
+                  <div className="space-y-2 text-xs">
+                    {[
+                      "1. Isolate compromised subnets and terminate active bearer tokens",
+                      "2. Freeze host memory state and clone disk image for digital forensics",
+                      "3. Rotate privileged root credentials and certificate authority keys",
+                      "4. Coordinate notification with emergency cert contacts and compliance leads",
+                      "5. Verify integrity of immutable recovery points prior to restored deployment",
+                    ].map((item, idx) => (
+                      <p key={idx} className="p-2.5 rounded-lg bg-card/60 border border-border/40 text-muted-foreground">
+                        {item}
+                      </p>
+                    ))}
                   </div>
                 </Card>
               </div>
-            </div>
-          </TabsContent>
-
-          {/* Intelligence Tab */}
-          <TabsContent value="intelligence" className="space-y-6">
-            <div className="text-center">
-              <Card className="inline-block p-8 bg-muted/50">
-                <div className="flex items-center justify-center w-16 h-16 rounded-full bg-primary/20 mx-auto mb-4">
-                  <Target className="h-8 w-8 text-primary" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2">
-                  Advanced Threat Intelligence
-                </h3>
-                <p className="text-muted-foreground max-w-md mb-6">
-                  Real-time threat intelligence feeds, IoC databases, and
-                  advanced analytics coming soon to help you stay ahead of
-                  emerging threats.
-                </p>
-                <Button>Request Early Access</Button>
-              </Card>
             </div>
           </TabsContent>
         </Tabs>
@@ -524,7 +373,6 @@ export default function Threats() {
   );
 }
 
-// Fix missing Brain import
 function Brain({ className }: { className?: string }) {
   return (
     <svg

@@ -1,30 +1,46 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
 import {
   Shield,
-  Mail,
-  Lock,
   Eye,
   EyeOff,
   AlertCircle,
-  Chrome,
+  Loader2,
+  Lock,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
+
+function GoogleIcon({ className = "h-4 w-4" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24">
+      <path
+        fill="#4285F4"
+        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+      />
+      <path
+        fill="#34A853"
+        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+      />
+      <path
+        fill="#FBBC05"
+        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+      />
+      <path
+        fill="#EA4335"
+        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+      />
+    </svg>
+  );
+}
 
 export default function Login() {
   const navigate = useNavigate();
@@ -32,6 +48,7 @@ export default function Login() {
   const [loginMethod, setLoginMethod] = useState<"email" | "demo">("email");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({
     email: "",
@@ -49,7 +66,6 @@ export default function Login() {
     setError("");
 
     try {
-      // Check for demo credentials first
       if (
         formData.email === "demo@cybersafe.com" &&
         formData.password === "demo123"
@@ -61,7 +77,6 @@ export default function Login() {
           setError("Demo login failed");
         }
       } else {
-        // Use Firebase authentication
         await loginWithEmail(formData.email, formData.password);
         navigate("/dashboard");
       }
@@ -73,7 +88,7 @@ export default function Login() {
   };
 
   const handleGoogleLogin = async () => {
-    setIsLoading(true);
+    setIsGoogleLoading(true);
     setError("");
 
     try {
@@ -82,7 +97,7 @@ export default function Login() {
     } catch (err: any) {
       setError(err.message || "Failed to sign in with Google");
     } finally {
-      setIsLoading(false);
+      setIsGoogleLoading(false);
     }
   };
 
@@ -105,132 +120,140 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <main className="container px-4 py-8 max-w-md mx-auto">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/20 mb-4">
-            <Shield className="h-8 w-8 text-primary" />
-          </div>
-          <h1 className="text-3xl font-bold mb-2">Welcome Back</h1>
-          <p className="text-muted-foreground">
-            Sign in to your CyberSafe Portal account
+    <div className="min-h-screen bg-muted/20 flex items-center justify-center p-4">
+      <div className="w-full max-w-sm animate-fade-up">
+        {/* Brand / Header */}
+        <div className="text-center mb-6">
+          <Link to="/" className="inline-flex items-center gap-2 mb-3 group">
+            <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/25 flex items-center justify-center text-primary transition-transform group-hover:scale-105">
+              <Shield className="h-4 w-4" />
+            </div>
+            <span className="font-bold text-lg tracking-tight text-foreground">CyberSafe</span>
+          </Link>
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">
+            Sign in to Portal
+          </h1>
+          <p className="text-xs text-muted-foreground mt-1">
+            Access enterprise threat defense training
           </p>
         </div>
 
-        <Card>
-          <CardHeader className="pb-4">
-            <CardTitle>Sign In</CardTitle>
-            <CardDescription>
-              Choose your preferred sign-in method
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {/* Login Method Tabs */}
-            <div className="flex space-x-2">
-              <Button
-                variant={loginMethod === "email" ? "default" : "outline"}
-                size="sm"
+        <Card className="border border-border/80 shadow-xl bg-card animate-scale-in">
+          <CardHeader className="pb-3 pt-5 px-6">
+            {/* Segmented Control */}
+            <div className="grid grid-cols-2 p-1 bg-muted/60 rounded-lg text-xs font-medium">
+              <button
+                type="button"
                 onClick={() => setLoginMethod("email")}
-                className="flex-1"
+                className={`py-1.5 rounded-md transition-all ${
+                  loginMethod === "email"
+                    ? "bg-background text-foreground shadow-sm font-semibold"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
               >
-                <Mail className="h-4 w-4 mr-2" />
-                Email
-              </Button>
-              <Button
-                variant={loginMethod === "demo" ? "default" : "outline"}
-                size="sm"
+                Credentials
+              </button>
+              <button
+                type="button"
                 onClick={() => setLoginMethod("demo")}
-                className="flex-1"
+                className={`py-1.5 rounded-md transition-all ${
+                  loginMethod === "demo"
+                    ? "bg-background text-foreground shadow-sm font-semibold"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
               >
-                Demo
-              </Button>
+                Instant Demo
+              </button>
             </div>
+          </CardHeader>
 
+          <CardContent className="space-y-4 px-6 pb-6 pt-2">
             {error && (
-              <div className="flex items-center p-3 rounded-lg bg-destructive/10 text-destructive">
-                <AlertCircle className="h-4 w-4 mr-2" />
-                <span className="text-sm">{error}</span>
+              <div className="flex items-start gap-2 p-2.5 rounded-lg bg-destructive/10 text-destructive text-xs border border-destructive/20 leading-relaxed">
+                <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+                <span>{error}</span>
               </div>
             )}
 
-            {/* Email Login */}
+            {/* Email Login Form */}
             {loginMethod === "email" && (
-              <form onSubmit={handleEmailLogin} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
+              <form onSubmit={handleEmailLogin} className="space-y-3.5">
+                <div className="space-y-1.5">
+                  <Label htmlFor="email" className="text-xs font-medium">Email Address</Label>
                   <Input
                     id="email"
                     type="email"
-                    placeholder="Enter your email"
+                    placeholder="operator@cybersafe.com"
                     value={formData.email}
                     onChange={(e) => handleInputChange("email", e.target.value)}
                     required
+                    className="h-9 text-sm"
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="password">Password</Label>
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="password" className="text-xs font-medium">Password</Label>
+                    <Link
+                      to="/forgot-password"
+                      className="text-xs text-muted-foreground hover:text-primary"
+                    >
+                      Forgot?
+                    </Link>
+                  </div>
                   <div className="relative">
                     <Input
                       id="password"
                       type={showPassword ? "text" : "password"}
-                      placeholder="Enter your password"
+                      placeholder="••••••••"
                       value={formData.password}
                       onChange={(e) =>
                         handleInputChange("password", e.target.value)
                       }
                       required
+                      className="h-9 text-sm pr-9"
                     />
                     <Button
                       type="button"
                       variant="ghost"
                       size="sm"
-                      className="absolute right-2 top-1/2 -translate-y-1/2 h-auto p-1"
+                      className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 p-0 text-muted-foreground"
                       onClick={() => setShowPassword(!showPassword)}
                     >
                       {showPassword ? (
-                        <EyeOff className="h-4 w-4" />
+                        <EyeOff className="h-3.5 w-3.5" />
                       ) : (
-                        <Eye className="h-4 w-4" />
+                        <Eye className="h-3.5 w-3.5" />
                       )}
                     </Button>
                   </div>
                 </div>
-                <div className="flex items-center justify-between">
-                  <Link
-                    to="/forgot-password"
-                    className="text-sm text-primary hover:underline"
-                  >
-                    Forgot password?
-                  </Link>
-                </div>
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? "Signing in..." : "Sign In"}
+                <Button type="submit" className="w-full h-9 text-sm font-medium" disabled={isLoading || isGoogleLoading}>
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="h-3.5 w-3.5 mr-2 animate-spin" />
+                      Authenticating...
+                    </>
+                  ) : (
+                    "Sign In with Email"
+                  )}
                 </Button>
               </form>
             )}
 
             {/* Demo Login */}
             {loginMethod === "demo" && (
-              <div className="space-y-4">
-                <div className="p-4 rounded-lg bg-muted/50 space-y-2">
-                  <h3 className="font-medium">Demo Account Access</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Explore CyberSafe Portal with pre-configured demo data and
-                    limited permissions.
+              <div className="space-y-3">
+                <div className="p-3 rounded-lg bg-muted/40 border border-border/50 text-xs space-y-1.5">
+                  <p className="font-semibold text-foreground">Pre-configured Role Access</p>
+                  <p className="text-muted-foreground leading-relaxed">
+                    Test the complete portal immediately with pre-loaded curricula.
                   </p>
-                  <div className="space-y-1 text-sm">
-                    <p>
-                      <span className="font-medium">Email:</span>{" "}
-                      demo@cybersafe.com
-                    </p>
-                    <p>
-                      <span className="font-medium">Password:</span> demo123
-                    </p>
+                  <div className="pt-1 font-mono text-[11px] text-muted-foreground">
+                    demo@cybersafe.com • demo123
                   </div>
                 </div>
-                <Button onClick={handleDemoLogin} className="w-full">
-                  Continue as Demo User
+                <Button onClick={handleDemoLogin} className="w-full h-9 text-sm font-medium" disabled={isLoading || isGoogleLoading}>
+                  {isLoading ? "Signing In..." : "Continue as Demo Analyst"}
                 </Button>
               </div>
             )}
@@ -239,46 +262,46 @@ export default function Login() {
             <Button
               onClick={handleGoogleLogin}
               variant="outline"
-              className="w-full"
-              disabled={isLoading}
+              className="w-full h-9 text-sm border-border/80 hover:bg-muted/50 font-medium"
+              disabled={isLoading || isGoogleLoading}
             >
-              <Chrome className="h-4 w-4 mr-2" />
-              Continue with Google
+              {isGoogleLoading ? (
+                <>
+                  <Loader2 className="h-3.5 w-3.5 mr-2 animate-spin text-primary" />
+                  Connecting Google Account...
+                </>
+              ) : (
+                <>
+                  <GoogleIcon className="h-4 w-4 mr-2" />
+                  Continue with Google
+                </>
+              )}
             </Button>
 
             {/* Divider */}
-            <div className="relative">
+            <div className="relative py-1">
               <Separator />
-              <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background px-2 text-xs text-muted-foreground">
-                OR
+              <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-[10px] uppercase tracking-wider text-muted-foreground">
+                or
               </span>
             </div>
 
             {/* Sign Up Link */}
-            <div className="text-center">
-              <p className="text-sm text-muted-foreground">
-                Don't have an account?{" "}
-                <Link to="/signup" className="text-primary hover:underline">
-                  Sign up
-                </Link>
-              </p>
+            <div className="text-center text-xs text-muted-foreground">
+              New to CyberSafe?{" "}
+              <Link to="/signup" className="text-primary font-medium hover:underline">
+                Create Account
+              </Link>
             </div>
           </CardContent>
         </Card>
 
         {/* Security Notice */}
-        <div className="mt-6 p-4 rounded-lg bg-muted/50 text-center">
-          <Badge variant="outline" className="mb-2">
-            <Shield className="h-3 w-3 mr-1" />
-            Secure Login
-          </Badge>
-          <p className="text-xs text-muted-foreground">
-            Your login is protected with enterprise-grade security including
-            encryption and multi-factor authentication.
-          </p>
-        </div>
-      </main>
-      <Footer />
+        <p className="text-center text-[11px] text-muted-foreground/80 mt-6 flex items-center justify-center gap-1.5">
+          <Lock className="h-3 w-3 text-emerald-400" />
+          Encrypted authentication session
+        </p>
+      </div>
     </div>
   );
 }

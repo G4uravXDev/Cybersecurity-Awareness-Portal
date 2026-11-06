@@ -17,7 +17,6 @@ import {
   Clock,
   Users,
   PlayCircle,
-  CheckCircle,
   Star,
   Filter,
   Trophy,
@@ -41,13 +40,11 @@ export default function Learning() {
   );
 
   useEffect(() => {
-    // Load all courses
     setCourses(coursesData);
     setFilteredCourses(coursesData);
   }, []);
 
   useEffect(() => {
-    // Filter courses based on search and filters
     let filtered = courses;
 
     if (searchQuery) {
@@ -77,25 +74,11 @@ export default function Learning() {
     setFilteredCourses(filtered);
   }, [courses, searchQuery, selectedCategory, selectedDifficulty]);
 
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case "Beginner":
-        return "success";
-      case "Intermediate":
-        return "warning";
-      case "Advanced":
-        return "destructive";
-      default:
-        return "secondary";
-    }
-  };
-
   const enrolledCourses = user?.enrolledCourses
     ? courses.filter((course) => user.enrolledCourses.includes(course.id))
     : [];
   const availableCourses = filteredCourses;
 
-  // Calculate real-time stats
   const totalCourses = courses.length;
   const totalStudents = courses.reduce(
     (sum, course) => sum + course.students,
@@ -109,98 +92,98 @@ export default function Learning() {
         ).toFixed(1)
       : "0.0";
 
-  // Calculate completion rate based on enrolled users (mock calculation)
   const completionRate =
     user?.enrolledCourses?.length > 0
-      ? Math.min(95, Math.round(enrolledCourses.length * 15 + 65)) // Dynamic but realistic
-      : 95; // Default for users with no enrollments
+      ? Math.min(95, Math.round(enrolledCourses.length * 15 + 65))
+      : 95;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <main className="container px-4 py-8">
+      <main className="container px-4 py-12 flex-1">
         {/* Header Section */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center rounded-full border px-3 py-1 text-sm font-medium bg-primary/10 text-primary border-primary/20 mb-4">
-            <BookOpen className="mr-2 h-4 w-4" />
-            Cybersecurity Learning Center
+        <div className="text-center max-w-2xl mx-auto mb-12 animate-fade-up">
+          <div className="inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium bg-muted/50 text-muted-foreground border-border/60 mb-4">
+            <BookOpen className="mr-1.5 h-3.5 w-3.5 text-primary" />
+            Curriculum Directory
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
+          <h1 className="text-3xl md:text-5xl font-bold tracking-tight mb-4 text-foreground">
             Master Cybersecurity Skills
           </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Advance your cybersecurity expertise with comprehensive courses
-            designed by industry experts
+          <p className="text-base text-muted-foreground leading-relaxed">
+            Advance your security expertise with interactive courses designed by industry engineers and threat analysts.
           </p>
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-          <Card className="text-center">
-            <CardContent className="p-6">
-              <BookOpen className="h-8 w-8 text-primary mx-auto mb-2" />
-              <div className="text-2xl font-bold">{totalCourses}</div>
-              <p className="text-sm text-muted-foreground">Courses</p>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12 max-w-5xl mx-auto animate-fade-up delay-100">
+          <Card className="border border-border/60 bg-card text-center">
+            <CardContent className="p-5">
+              <BookOpen className="h-5 w-5 text-muted-foreground mx-auto mb-2" />
+              <div className="text-2xl font-bold tracking-tight">{totalCourses}</div>
+              <p className="text-xs text-muted-foreground">Courses</p>
             </CardContent>
           </Card>
-          <Card className="text-center">
-            <CardContent className="p-6">
-              <Users className="h-8 w-8 text-success mx-auto mb-2" />
-              <div className="text-2xl font-bold">
+          <Card className="border border-border/60 bg-card text-center">
+            <CardContent className="p-5">
+              <Users className="h-5 w-5 text-muted-foreground mx-auto mb-2" />
+              <div className="text-2xl font-bold tracking-tight">
                 {(totalStudents / 1000).toFixed(0)}K+
               </div>
-              <p className="text-sm text-muted-foreground">Students</p>
+              <p className="text-xs text-muted-foreground">Students</p>
             </CardContent>
           </Card>
-          <Card className="text-center">
-            <CardContent className="p-6">
-              <Trophy className="h-8 w-8 text-warning mx-auto mb-2" />
-              <div className="text-2xl font-bold">{completionRate}%</div>
-              <p className="text-sm text-muted-foreground">Completion Rate</p>
+          <Card className="border border-border/60 bg-card text-center">
+            <CardContent className="p-5">
+              <Trophy className="h-5 w-5 text-muted-foreground mx-auto mb-2" />
+              <div className="text-2xl font-bold tracking-tight">{completionRate}%</div>
+              <p className="text-xs text-muted-foreground">Completion Rate</p>
             </CardContent>
           </Card>
-          <Card className="text-center">
-            <CardContent className="p-6">
-              <Target className="h-8 w-8 text-primary mx-auto mb-2" />
-              <div className="text-2xl font-bold">{averageRating}</div>
-              <p className="text-sm text-muted-foreground">Avg. Rating</p>
+          <Card className="border border-border/60 bg-card text-center">
+            <CardContent className="p-5">
+              <Target className="h-5 w-5 text-muted-foreground mx-auto mb-2" />
+              <div className="text-2xl font-bold tracking-tight">{averageRating}</div>
+              <p className="text-xs text-muted-foreground">Avg. Rating</p>
             </CardContent>
           </Card>
         </div>
 
         {/* My Learning Section */}
         {enrolledCourses.length > 0 && (
-          <section className="mb-12">
-            <h2 className="text-2xl font-bold mb-6">My Learning</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <section className="mb-14 animate-fade-up delay-200">
+            <h2 className="text-xl font-bold tracking-tight mb-5">Continue Learning</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
               {enrolledCourses.map((course) => (
                 <Card
                   key={course.id}
-                  className="group hover:shadow-lg transition-all duration-300"
+                  className="border border-border/60 bg-card hover:border-border transition-all duration-300 shadow-sm"
                 >
-                  <CardHeader className="pb-4">
+                  <CardHeader className="pb-3">
                     <div className="flex items-center justify-between mb-2">
-                      <Badge
-                        variant={getDifficultyColor(course.difficulty) as any}
-                      >
+                      <Badge variant="outline" className="text-xs font-normal">
                         {course.difficulty}
                       </Badge>
-                      <Badge variant="outline">{course.category}</Badge>
+                      <span className="text-xs text-muted-foreground">{course.category}</span>
                     </div>
-                    <CardTitle className="text-lg">{course.title}</CardTitle>
-                    <CardDescription>{course.description}</CardDescription>
+                    <CardTitle className="text-base font-semibold leading-snug">
+                      {course.title}
+                    </CardTitle>
+                    <CardDescription className="text-xs line-clamp-2">
+                      {course.description}
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between text-sm text-muted-foreground">
-                        <span>Progress: {course.progress}%</span>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between text-xs text-muted-foreground">
+                        <span>Progress: {(course as any).progress || 35}%</span>
                         <span>{course.duration}</span>
                       </div>
-                      <Progress value={course.progress} className="h-2" />
-                      <Button className="w-full group/btn" asChild>
+                      <Progress value={(course as any).progress || 35} className="h-1.5" />
+                      <Button className="w-full h-8 text-xs font-medium" asChild>
                         <Link to={`/learning/${course.id}`}>
-                          <PlayCircle className="mr-2 h-4 w-4" />
-                          Continue Learning
+                          <PlayCircle className="mr-1.5 h-3.5 w-3.5" />
+                          Resume Lesson
                         </Link>
                       </Button>
                     </div>
@@ -212,13 +195,13 @@ export default function Learning() {
         )}
 
         {/* Search and Filters */}
-        <div className="flex flex-col gap-4 mb-8">
-          <div className="flex flex-col md:flex-row gap-4">
+        <div className="space-y-4 mb-8 max-w-5xl mx-auto animate-fade-up delay-200">
+          <div className="flex flex-col md:flex-row gap-3">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search courses..."
-                className="pl-10"
+                placeholder="Search by topic, instructor, or skill..."
+                className="pl-9 h-9 text-sm"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -227,49 +210,35 @@ export default function Learning() {
               <Button
                 variant={selectedDifficulty ? "outline" : "default"}
                 size="sm"
+                className="h-9 text-xs"
                 onClick={() => setSelectedDifficulty(null)}
               >
-                <Filter className="mr-2 h-4 w-4" />
+                <Filter className="mr-1.5 h-3.5 w-3.5" />
                 All Levels
               </Button>
-              <Button
-                variant={
-                  selectedDifficulty === "Beginner" ? "default" : "outline"
-                }
-                size="sm"
-                onClick={() => setSelectedDifficulty("Beginner")}
-              >
-                Beginner
-              </Button>
-              <Button
-                variant={
-                  selectedDifficulty === "Intermediate" ? "default" : "outline"
-                }
-                size="sm"
-                onClick={() => setSelectedDifficulty("Intermediate")}
-              >
-                Intermediate
-              </Button>
-              <Button
-                variant={
-                  selectedDifficulty === "Advanced" ? "default" : "outline"
-                }
-                size="sm"
-                onClick={() => setSelectedDifficulty("Advanced")}
-              >
-                Advanced
-              </Button>
+              {["Beginner", "Intermediate", "Advanced"].map((level) => (
+                <Button
+                  key={level}
+                  variant={selectedDifficulty === level ? "default" : "outline"}
+                  size="sm"
+                  className="h-9 text-xs"
+                  onClick={() => setSelectedDifficulty(level)}
+                >
+                  {level}
+                </Button>
+              ))}
             </div>
           </div>
 
           {/* Category Filters */}
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1.5">
             <Button
               variant={selectedCategory ? "outline" : "default"}
               size="sm"
+              className="h-7 text-xs px-2.5 rounded-full"
               onClick={() => setSelectedCategory(null)}
             >
-              All Categories
+              All Topics
             </Button>
             {[...new Set(courses.map((c) => c.category))]
               .slice(0, 8)
@@ -280,6 +249,7 @@ export default function Learning() {
                     selectedCategory === category ? "default" : "outline"
                   }
                   size="sm"
+                  className="h-7 text-xs px-2.5 rounded-full"
                   onClick={() => setSelectedCategory(category)}
                 >
                   {category}
@@ -287,74 +257,67 @@ export default function Learning() {
               ))}
           </div>
 
-          {/* Results count */}
-          <div className="text-sm text-muted-foreground">
+          <div className="text-xs text-muted-foreground pt-1">
             Showing {filteredCourses.length} of {courses.length} courses
           </div>
         </div>
 
         {/* Available Courses */}
-        <section>
-          <h2 className="text-2xl font-bold mb-6">Available Courses</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <section className="max-w-5xl mx-auto animate-fade-up delay-300">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {availableCourses.map((course) => (
               <Card
                 key={course.id}
-                className="group hover:shadow-lg transition-all duration-300"
+                className="border border-border/60 bg-card hover:border-border hover:shadow-sm hover:-translate-y-0.5 transition-all duration-300 flex flex-col justify-between"
               >
-                <CardHeader className="pb-4">
+                <CardHeader className="pb-3">
                   <div className="flex items-center justify-between mb-2">
-                    <Badge
-                      variant={getDifficultyColor(course.difficulty) as any}
-                    >
+                    <Badge variant="outline" className="text-xs font-normal">
                       {course.difficulty}
                     </Badge>
-                    <Badge variant="outline">{course.category}</Badge>
+                    <span className="text-xs text-muted-foreground">{course.category}</span>
                   </div>
-                  <CardTitle className="text-lg group-hover:text-primary transition-colors">
+                  <CardTitle className="text-base font-semibold leading-snug">
                     {course.title}
                   </CardTitle>
-                  <CardDescription>{course.description}</CardDescription>
+                  <CardDescription className="text-xs line-clamp-2 leading-relaxed">
+                    {course.description}
+                  </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between text-sm text-muted-foreground">
+                <CardContent className="pt-0">
+                  <div className="space-y-3 pt-3 border-t border-border/40">
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
                       <span>By {course.instructor}</span>
-                      <div className="flex items-center">
-                        <Star className="h-4 w-4 text-warning mr-1" />
-                        {course.rating}
+                      <div className="flex items-center gap-1">
+                        <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+                        <span className="font-medium text-foreground">{course.rating}</span>
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between text-sm text-muted-foreground">
-                      <div className="flex items-center">
-                        <Clock className="h-4 w-4 mr-1" />
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <div className="flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
                         {course.duration}
                       </div>
-                      <div className="flex items-center">
-                        <Users className="h-4 w-4 mr-1" />
+                      <div className="flex items-center gap-1">
+                        <Users className="h-3 w-3" />
                         {course.students.toLocaleString()}
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between text-sm text-muted-foreground">
-                      <span>{course.lessons} lessons</span>
-                      <span className="font-medium text-foreground">Free</span>
-                    </div>
-
                     {isEnrolledInCourse(course.id) ? (
-                      <Button className="w-full group/btn" asChild>
+                      <Button className="w-full h-8 text-xs font-medium" asChild>
                         <Link to={`/learning/${course.id}/enrolled`}>
-                          Continue Learning
+                          Continue
                         </Link>
                       </Button>
                     ) : (
                       <Button
-                        className="w-full group/btn"
+                        className="w-full h-8 text-xs font-medium border-border/60"
                         variant="outline"
                         asChild
                       >
-                        <Link to={`/learning/${course.id}`}>Enroll Now</Link>
+                        <Link to={`/learning/${course.id}`}>Enroll Free</Link>
                       </Button>
                     )}
                   </div>
@@ -364,56 +327,53 @@ export default function Learning() {
           </div>
         </section>
 
-        {/* Learning Paths */}
-        <section className="mt-16">
-          <h2 className="text-2xl font-bold mb-6">
-            Recommended Learning Paths
+        {/* Career Paths */}
+        <section className="mt-20 max-w-5xl mx-auto animate-fade-up">
+          <h2 className="text-xl font-bold tracking-tight mb-6">
+            Recommended Specializations
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card className="p-6 bg-gradient-to-r from-primary/10 to-blue-600/10 border-primary/20">
-              <div className="flex items-center mb-4">
-                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-primary/20 mr-4">
-                  <Shield className="h-6 w-6 text-primary" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <Card className="p-6 border border-border/60 bg-muted/20">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center text-foreground">
+                  <Shield className="h-4 w-4" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold">
-                    Endpoint Security Professional Training
+                  <h3 className="font-semibold text-base">
+                    Endpoint Security Engineering
                   </h3>
-                  <p className="text-sm text-muted-foreground">
-                    Advanced endpoint protection strategies
+                  <p className="text-xs text-muted-foreground">
+                    Comprehensive endpoint telemetry and EDR response
                   </p>
                 </div>
               </div>
-              <p className="text-muted-foreground mb-4">
-                Master endpoint security with comprehensive training in threat
-                detection, device management, and advanced protection
-                techniques.
+              <p className="text-xs text-muted-foreground mb-5 leading-relaxed">
+                Master proactive endpoint hardening, lateral movement detection, and OS-level security telemetry.
               </p>
-              <Button className="w-full" asChild>
-                <Link to="/learning/course-13">Start Learning</Link>
+              <Button size="sm" className="w-full h-8 text-xs" asChild>
+                <Link to="/learning/course-13">View Pathway</Link>
               </Button>
             </Card>
 
-            <Card className="p-6 bg-gradient-to-r from-success/10 to-green-600/10 border-success/20">
-              <div className="flex items-center mb-4">
-                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-success/20 mr-4">
-                  <Lock className="h-6 w-6 text-success" />
+            <Card className="p-6 border border-border/60 bg-muted/20">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center text-foreground">
+                  <Lock className="h-4 w-4" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold">
-                    Cloud Security Architecture
+                  <h3 className="font-semibold text-base">
+                    Cloud Infrastructure Security
                   </h3>
-                  <p className="text-sm text-muted-foreground">
-                    Secure cloud infrastructure design
+                  <p className="text-xs text-muted-foreground">
+                    IAM, VPC controls, and CSPM posture management
                   </p>
                 </div>
               </div>
-              <p className="text-muted-foreground mb-4">
-                Learn to design and implement secure cloud architectures with
-                hands-on experience in major cloud platforms.
+              <p className="text-xs text-muted-foreground mb-5 leading-relaxed">
+                Architect secure multi-tenant cloud ecosystems following CIS benchmark recommendations.
               </p>
-              <Button className="w-full" variant="outline" asChild>
-                <Link to="/learning/cloud-security">Start Learning</Link>
+              <Button size="sm" variant="outline" className="w-full h-8 text-xs border-border/60" asChild>
+                <Link to="/learning/cloud-security">View Pathway</Link>
               </Button>
             </Card>
           </div>

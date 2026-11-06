@@ -10,23 +10,21 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   ArrowLeft,
   AlertTriangle,
-  Shield,
   Eye,
   Target,
   Activity,
   Clock,
-  Building,
   CheckCircle,
-  XCircle,
   Zap,
   Book,
   Download,
-  Share,
+  Shield,
+  FileText,
+  PhoneCall,
 } from "lucide-react";
 import { getThreatById } from "@/lib/threatsData";
 
@@ -36,15 +34,18 @@ export default function ThreatDetail() {
 
   if (!threat) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background flex flex-col">
         <Header />
-        <main className="container px-4 py-8 text-center">
-          <h1 className="text-2xl font-bold mb-4">Threat Not Found</h1>
-          <p className="text-muted-foreground mb-4">
-            The threat you're looking for doesn't exist.
+        <main className="container px-4 py-16 text-center max-w-md mx-auto flex-1 flex flex-col items-center justify-center">
+          <Shield className="h-10 w-10 text-muted-foreground mb-4" />
+          <h1 className="text-xl font-bold tracking-tight text-foreground mb-2">
+            Threat Dossier Not Found
+          </h1>
+          <p className="text-xs text-muted-foreground mb-6">
+            The requested intelligence dossier does not exist in the threat registry.
           </p>
-          <Button asChild>
-            <Link to="/threats">Back to Threats</Link>
+          <Button asChild size="sm" variant="outline" className="h-8 text-xs">
+            <Link to="/threats">Return to Threat Matrix</Link>
           </Button>
         </main>
         <Footer />
@@ -52,199 +53,177 @@ export default function ThreatDetail() {
     );
   }
 
-  const getSeverityColor = (severity: string) => {
+  const getSeverityVariant = (severity: string): "default" | "secondary" | "destructive" | "outline" => {
     switch (severity) {
       case "Critical":
+      case "High":
         return "destructive";
-      case "High":
-        return "warning";
       case "Medium":
         return "secondary";
-      case "Low":
-        return "success";
       default:
-        return "secondary";
-    }
-  };
-
-  const getSeverityIcon = (severity: string) => {
-    switch (severity) {
-      case "Critical":
-        return AlertTriangle;
-      case "High":
-        return Zap;
-      case "Medium":
-        return Activity;
-      case "Low":
-        return CheckCircle;
-      default:
-        return Activity;
+        return "outline";
     }
   };
 
   const preventionSteps = [
     {
-      title: "Immediate Actions",
-      description: "Steps to take right now to protect against this threat",
+      title: "Immediate Mitigation Actions",
+      description: "Controls to implement immediately across sensitive subnets",
       actions: threat.prevention.slice(0, 3),
-      timeframe: "Within 24 hours",
+      timeframe: "< 24 Hours",
       priority: "Critical",
     },
     {
-      title: "Short-term Measures",
-      description: "Security improvements to implement this week",
+      title: "Hardening & Policy Controls",
+      description: "Structural security enhancements across infrastructure",
       actions: threat.prevention.slice(3, 5),
-      timeframe: "Within 1 week",
+      timeframe: "< 7 Days",
       priority: "High",
     },
     {
-      title: "Long-term Strategy",
-      description: "Comprehensive security enhancements for ongoing protection",
+      title: "Strategic Defense & Drills",
+      description: "Ongoing adversarial testing and compliance monitoring",
       actions: [
-        "Regular security audits",
-        "Employee training programs",
-        "Incident response planning",
+        "Continuous vulnerability scanning and baseline auditing",
+        "Red-team phishing simulation and security posture drills",
+        "Automated backup integrity testing and isolation verification",
       ],
-      timeframe: "Ongoing",
-      priority: "Medium",
+      timeframe: "Continuous",
+      priority: "Standard",
     },
   ];
 
-  const SeverityIcon = getSeverityIcon(threat.severity);
-
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <main className="container px-4 py-8">
-        {/* Breadcrumb */}
-        <div className="flex items-center space-x-2 text-sm text-muted-foreground mb-6">
-          <Link to="/threats" className="hover:text-foreground">
-            Threats
-          </Link>
-          <span>/</span>
-          <span>{threat.category}</span>
-          <span>/</span>
-          <span className="text-foreground">{threat.name}</span>
+      <main className="container px-4 py-10 flex-1">
+        {/* Navigation & Breadcrumbs */}
+        <div className="flex items-center justify-between mb-8 animate-fade-down">
+          <Button variant="ghost" size="sm" className="h-8 px-2 text-xs text-muted-foreground hover:text-foreground" asChild>
+            <Link to="/threats">
+              <ArrowLeft className="h-3.5 w-3.5 mr-1.5" />
+              Threat Matrix
+            </Link>
+          </Button>
+          <div className="flex items-center space-x-1.5 text-xs text-muted-foreground">
+            <span>Threats</span>
+            <span>/</span>
+            <span>{threat.category}</span>
+            <span>/</span>
+            <span className="text-foreground font-medium truncate max-w-[200px]">{threat.name}</span>
+          </div>
         </div>
-
-        {/* Back Button */}
-        <Button variant="outline" size="sm" className="mb-6" asChild>
-          <Link to="/threats">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Threats
-          </Link>
-        </Button>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
-          <div className="lg:col-span-2">
-            {/* Threat Header */}
-            <div className="mb-8">
-              <div className="flex items-center space-x-3 mb-4">
-                <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-destructive/10">
-                  <SeverityIcon className="h-6 w-6 text-destructive" />
-                </div>
-                <div>
-                  <Badge
-                    variant={getSeverityColor(threat.severity) as any}
-                    className="mb-2"
-                  >
-                    {threat.severity} Risk
-                  </Badge>
-                  <Badge variant="outline" className="ml-2">
-                    {threat.category}
-                  </Badge>
-                </div>
+          <div className="lg:col-span-2 space-y-8 animate-fade-up">
+            {/* Header */}
+            <div>
+              <div className="flex flex-wrap items-center gap-2 mb-4">
+                <Badge variant={getSeverityVariant(threat.severity)} className="text-xs font-normal">
+                  {threat.severity} Severity
+                </Badge>
+                <Badge variant="outline" className="text-xs font-normal border-border/80">
+                  {threat.category}
+                </Badge>
+                <span className="text-xs font-mono text-muted-foreground ml-auto">
+                  ID: #{threat.id}
+                </span>
               </div>
 
-              <h1 className="text-4xl font-bold mb-4">{threat.name}</h1>
+              <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-4">
+                {threat.name}
+              </h1>
 
-              {/* Risk Level */}
-              <div className="space-y-2 mb-6">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="font-medium">Risk Level</span>
-                  <span className="font-bold">{threat.riskLevel}%</span>
+              {/* Risk Level Bar */}
+              <div className="p-4 rounded-xl border border-border/80 bg-card/60 mb-6">
+                <div className="flex items-center justify-between text-xs text-muted-foreground mb-1.5">
+                  <span className="font-medium text-foreground">Threat Severity Assessment</span>
+                  <span className="font-mono font-bold text-foreground">{threat.riskLevel} / 100</span>
                 </div>
-                <div className="w-full bg-muted rounded-full h-3">
+                <div className="w-full bg-muted/60 rounded-full h-2 overflow-hidden">
                   <div
-                    className="bg-destructive h-3 rounded-full transition-all duration-1000"
+                    className={`h-full rounded-full transition-all duration-700 ${
+                      threat.riskLevel > 75 ? "bg-rose-500" : threat.riskLevel > 50 ? "bg-amber-500" : "bg-primary"
+                    }`}
                     style={{ width: `${threat.riskLevel}%` }}
                   />
                 </div>
               </div>
 
               {/* Recent Activity Alert */}
-              <Card className="mb-6 border-warning bg-warning/5">
-                <CardContent className="p-4">
-                  <div className="flex items-center space-x-3">
-                    <AlertTriangle className="h-5 w-5 text-warning flex-shrink-0" />
+              {threat.recentActivity && (
+                <div className="p-4 rounded-xl border border-rose-500/25 bg-rose-500/5 mb-6">
+                  <div className="flex items-start gap-3">
+                    <AlertTriangle className="h-4 w-4 text-rose-400 mt-0.5 shrink-0" />
                     <div>
-                      <h3 className="font-semibold text-warning">
-                        Recent Activity
+                      <h3 className="text-xs font-semibold text-rose-400 mb-0.5">
+                        Active Telemetry Alert
                       </h3>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-xs text-muted-foreground leading-relaxed">
                         {threat.recentActivity}
                       </p>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              )}
             </div>
 
-            {/* Main Content Tabs */}
+            {/* Main Tabs */}
             <Tabs defaultValue="overview" className="space-y-6">
-              <TabsList className="grid w-full grid-cols-4">
-                <TabsTrigger value="overview">Overview</TabsTrigger>
-                <TabsTrigger value="indicators">Indicators</TabsTrigger>
-                <TabsTrigger value="prevention">Prevention</TabsTrigger>
-                <TabsTrigger value="response">Response</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-4 h-9 bg-muted/50 p-1">
+                <TabsTrigger value="overview" className="text-xs">Overview</TabsTrigger>
+                <TabsTrigger value="indicators" className="text-xs">IoCs</TabsTrigger>
+                <TabsTrigger value="prevention" className="text-xs">Prevention</TabsTrigger>
+                <TabsTrigger value="response" className="text-xs">Playbook</TabsTrigger>
               </TabsList>
 
               {/* Overview Tab */}
-              <TabsContent value="overview" className="space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center">
-                      <Book className="h-5 w-5 mr-2" />
-                      Threat Description
+              <TabsContent value="overview">
+                <Card className="border border-border/80 bg-card">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-base font-semibold flex items-center gap-2">
+                      <Book className="h-4 w-4 text-primary" />
+                      Threat Architecture & Dynamics
                     </CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <p className="text-base leading-relaxed">
+                  <CardContent className="space-y-3 text-xs leading-relaxed text-muted-foreground">
+                    <p className="text-sm font-medium text-foreground leading-relaxed">
                       {threat.description}
+                    </p>
+                    <p>
+                      Adversaries leveraging this attack vector commonly focus on credential harvesting, lateral escalation across Windows and cloud perimeters, and persistence establishment. Proactive monitoring of anomalous API invocations and outbound C2 traffic is mandatory.
                     </p>
                   </CardContent>
                 </Card>
               </TabsContent>
 
-              {/* Indicators Tab */}
-              <TabsContent value="indicators" className="space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center">
-                      <Eye className="h-5 w-5 mr-2" />
+              {/* IoC Tab */}
+              <TabsContent value="indicators" className="space-y-4">
+                <Card className="border border-border/80 bg-card">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-base font-semibold flex items-center gap-2">
+                      <Eye className="h-4 w-4 text-primary" />
                       Indicators of Compromise (IoCs)
                     </CardTitle>
-                    <CardDescription>
-                      Watch for these signs that may indicate this threat is
-                      present in your environment
+                    <CardDescription className="text-xs">
+                      Signatures and behavioral markers observed in active campaigns
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                       {threat.indicators.map((indicator, index) => (
                         <div
                           key={index}
-                          className="flex items-start space-x-3 p-3 rounded-lg border"
+                          className="flex items-start gap-3 p-3 rounded-lg border border-border/60 bg-muted/20"
                         >
-                          <div className="flex items-center justify-center w-6 h-6 rounded-full bg-warning/20 text-warning text-sm font-bold flex-shrink-0 mt-0.5">
-                            {index + 1}
-                          </div>
-                          <div>
-                            <p className="font-medium">{indicator}</p>
-                            <p className="text-sm text-muted-foreground">
-                              Monitor for this behavior pattern in your security
-                              tools and logs
+                          <span className="font-mono text-xs font-bold text-primary mt-0.5">
+                            [{index + 1}]
+                          </span>
+                          <div className="space-y-0.5">
+                            <p className="font-medium text-xs text-foreground font-mono">{indicator}</p>
+                            <p className="text-[11px] text-muted-foreground">
+                              Correlate with endpoint telemetry and proxy access logs.
                             </p>
                           </div>
                         </div>
@@ -252,85 +231,31 @@ export default function ThreatDetail() {
                     </div>
                   </CardContent>
                 </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Detection Tools</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <h4 className="font-medium">Network Monitoring</h4>
-                        <ul className="text-sm text-muted-foreground space-y-1">
-                          <li>• SIEM platforms</li>
-                          <li>• Network traffic analysis</li>
-                          <li>• Intrusion detection systems</li>
-                        </ul>
-                      </div>
-                      <div className="space-y-2">
-                        <h4 className="font-medium">Endpoint Protection</h4>
-                        <ul className="text-sm text-muted-foreground space-y-1">
-                          <li>• EDR solutions</li>
-                          <li>• Behavioral analysis</li>
-                          <li>• File integrity monitoring</li>
-                        </ul>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
               </TabsContent>
 
               {/* Prevention Tab */}
-              <TabsContent value="prevention" className="space-y-6">
-                <div className="space-y-6">
+              <TabsContent value="prevention" className="space-y-4">
+                <div className="space-y-4">
                   {preventionSteps.map((step, index) => (
-                    <Card key={index}>
-                      <CardHeader>
+                    <Card key={index} className="border border-border/80 bg-card">
+                      <CardHeader className="pb-3">
                         <div className="flex items-center justify-between">
-                          <CardTitle className="flex items-center">
-                            <div
-                              className={`flex items-center justify-center w-8 h-8 rounded-full mr-3 ${
-                                step.priority === "Critical"
-                                  ? "bg-destructive/20 text-destructive"
-                                  : step.priority === "High"
-                                    ? "bg-warning/20 text-warning"
-                                    : "bg-secondary/20 text-secondary-foreground"
-                              }`}
-                            >
-                              {index + 1}
-                            </div>
+                          <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                            <Shield className="h-4 w-4 text-primary" />
                             {step.title}
                           </CardTitle>
-                          <div className="flex items-center space-x-2">
-                            <Badge
-                              variant={
-                                step.priority === "Critical"
-                                  ? "destructive"
-                                  : step.priority === "High"
-                                    ? "warning"
-                                    : "secondary"
-                              }
-                              size="sm"
-                            >
-                              {step.priority}
-                            </Badge>
-                            <div className="flex items-center text-sm text-muted-foreground">
-                              <Clock className="h-4 w-4 mr-1" />
-                              {step.timeframe}
-                            </div>
-                          </div>
+                          <Badge variant="outline" className="text-[10px] font-mono border-border/60">
+                            {step.timeframe}
+                          </Badge>
                         </div>
-                        <CardDescription>{step.description}</CardDescription>
+                        <CardDescription className="text-xs">{step.description}</CardDescription>
                       </CardHeader>
                       <CardContent>
-                        <div className="space-y-3">
+                        <div className="space-y-2">
                           {step.actions.map((action, actionIndex) => (
-                            <div
-                              key={actionIndex}
-                              className="flex items-center space-x-3"
-                            >
-                              <CheckCircle className="h-4 w-4 text-success flex-shrink-0" />
-                              <span className="text-sm">{action}</span>
+                            <div key={actionIndex} className="flex items-start gap-2.5 text-xs text-muted-foreground">
+                              <CheckCircle className="h-3.5 w-3.5 text-emerald-400 mt-0.5 shrink-0" />
+                              <span className="leading-relaxed">{action}</span>
                             </div>
                           ))}
                         </div>
@@ -340,96 +265,67 @@ export default function ThreatDetail() {
                 </div>
               </TabsContent>
 
-              {/* Response Tab */}
-              <TabsContent value="response" className="space-y-6">
-                <Card className="border-destructive/20 bg-destructive/5">
-                  <CardHeader>
-                    <CardTitle className="flex items-center text-destructive">
-                      <AlertTriangle className="h-5 w-5 mr-2" />
-                      Incident Response Plan
+              {/* Playbook Tab */}
+              <TabsContent value="response" className="space-y-5">
+                <Card className="border border-border/80 bg-card">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm font-semibold flex items-center gap-2 text-rose-400">
+                      <AlertTriangle className="h-4 w-4" />
+                      Active Incident Containment Sequence
                     </CardTitle>
-                    <CardDescription>
-                      If you suspect this threat is active in your environment
+                    <CardDescription className="text-xs">
+                      Step-by-step containment procedures if active exploitation is confirmed
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-4">
+                    <div className="space-y-2.5">
                       {[
-                        "Immediately isolate affected systems to prevent spread",
-                        "Document all observed indicators and preserve evidence",
-                        "Notify your incident response team and management",
-                        "Assess the scope and impact of the potential breach",
-                        "Implement containment measures specific to this threat",
-                        "Begin forensic analysis and evidence collection",
-                        "Notify relevant authorities and stakeholders as required",
-                        "Execute recovery procedures and restore operations",
+                        "Isolate affected endpoints from network egress immediately",
+                        "Dump live kernel memory state and export process trees",
+                        "Revoke active Kerberos and OAuth refresh tokens for flagged identities",
+                        "Assess scope through SIEM timeline querying across all ingress vectors",
+                        "Deploy targeted endpoint remediation script via central EDR console",
+                        "Notify compliance leads and initiate external forensics support if needed",
                       ].map((step, index) => (
-                        <div key={index} className="flex items-start space-x-3">
-                          <div className="flex items-center justify-center w-6 h-6 rounded-full bg-destructive text-destructive-foreground text-sm font-bold flex-shrink-0 mt-0.5">
+                        <div key={index} className="flex items-start gap-3 p-2.5 rounded-lg border border-border/40 bg-muted/10 text-xs">
+                          <span className="w-5 h-5 rounded-md bg-muted/60 flex items-center justify-center font-mono text-[10px] font-bold text-foreground shrink-0">
                             {index + 1}
-                          </div>
-                          <span className="text-sm">{step}</span>
+                          </span>
+                          <span className="text-muted-foreground leading-relaxed">{step}</span>
                         </div>
                       ))}
                     </div>
                   </CardContent>
                 </Card>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Emergency Contacts</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      <div>
-                        <span className="font-medium">CERT Team:</span>{" "}
-                        cert@cybersafe.com
-                      </div>
-                      <div>
-                        <span className="font-medium">24/7 Hotline:</span> +1
-                        (555) 123-4567
-                      </div>
-                      <div>
-                        <span className="font-medium">FBI IC3:</span>{" "}
-                        www.ic3.gov
-                      </div>
-                      <div>
-                        <span className="font-medium">CISA:</span> +1 (888)
-                        282-0870
-                      </div>
-                    </CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Card className="border border-border/80 bg-card p-4 space-y-3">
+                    <div className="flex items-center gap-2 font-semibold text-xs text-foreground">
+                      <PhoneCall className="h-4 w-4 text-primary" />
+                      Emergency Escalation
+                    </div>
+                    <div className="space-y-1.5 text-xs text-muted-foreground">
+                      <p><span className="font-medium text-foreground">SOC Hotline:</span> +1 (800) 555-SECOPS</p>
+                      <p><span className="font-medium text-foreground">Incident Desk:</span> cert@cybersafe.com</p>
+                      <p><span className="font-medium text-foreground">CISA Registry:</span> us-cert.cisa.gov</p>
+                    </div>
                   </Card>
 
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Recovery Resources</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="w-full justify-start"
-                      >
-                        <Download className="h-4 w-4 mr-2" />
-                        Download Recovery Checklist
+                  <Card className="border border-border/80 bg-card p-4 space-y-3">
+                    <div className="flex items-center gap-2 font-semibold text-xs text-foreground">
+                      <FileText className="h-4 w-4 text-primary" />
+                      Remediation Artifacts
+                    </div>
+                    <div className="space-y-2">
+                      <Button variant="outline" size="sm" className="w-full h-8 text-xs justify-start border-border/60">
+                        <Download className="h-3.5 w-3.5 mr-2" />
+                        Download Remediation Checklist
                       </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="w-full justify-start"
-                      >
-                        <Book className="h-4 w-4 mr-2" />
-                        View Technical Documentation
+                      <Button variant="outline" size="sm" className="w-full h-8 text-xs justify-start border-border/60">
+                        <Target className="h-3.5 w-3.5 mr-2" />
+                        YARA / Sigma Detection Rules
                       </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="w-full justify-start"
-                      >
-                        <Target className="h-4 w-4 mr-2" />
-                        Access Threat Hunting Guide
-                      </Button>
-                    </CardContent>
+                    </div>
                   </Card>
                 </div>
               </TabsContent>
@@ -437,129 +333,65 @@ export default function ThreatDetail() {
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Threat Intelligence */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Threat Intelligence</CardTitle>
+          <div className="space-y-5 animate-fade-up delay-200">
+            {/* Intel Summary */}
+            <Card className="border border-border/80 bg-card">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-semibold flex items-center gap-1.5">
+                  <Activity className="h-4 w-4 text-primary" />
+                  Dossier Telemetry
+                </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-sm font-medium">Category:</span>
-                    <span className="text-sm">{threat.category}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm font-medium">Severity:</span>
-                    <Badge
-                      variant={getSeverityColor(threat.severity) as any}
-                      size="sm"
-                    >
-                      {threat.severity}
-                    </Badge>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm font-medium">Risk Score:</span>
-                    <span className="text-sm font-bold">
-                      {threat.riskLevel}/100
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm font-medium">Activity:</span>
-                    <span
-                      className={`text-sm font-medium ${threat.recentActivity ? "text-destructive" : "text-success"}`}
-                    >
-                      {threat.recentActivity ? "Active" : "Monitored"}
-                    </span>
-                  </div>
+              <CardContent className="divide-y divide-border/60 text-xs">
+                <div className="flex justify-between py-2 first:pt-0">
+                  <span className="text-muted-foreground">Vector Category</span>
+                  <span className="font-medium text-foreground">{threat.category}</span>
+                </div>
+                <div className="flex justify-between py-2">
+                  <span className="text-muted-foreground">Active Severity</span>
+                  <Badge variant={getSeverityVariant(threat.severity)} className="text-[10px] font-normal">
+                    {threat.severity}
+                  </Badge>
+                </div>
+                <div className="flex justify-between py-2">
+                  <span className="text-muted-foreground">Calculated Risk</span>
+                  <span className="font-mono font-bold text-foreground">{threat.riskLevel}/100</span>
+                </div>
+                <div className="flex justify-between py-2 last:pb-0">
+                  <span className="text-muted-foreground">Global Observation</span>
+                  <span className={`font-medium ${threat.recentActivity ? "text-rose-400" : "text-emerald-400"}`}>
+                    {threat.recentActivity ? "Active Exploit" : "Under Watch"}
+                  </span>
                 </div>
               </CardContent>
             </Card>
 
             {/* Related Threats */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Related Threats</CardTitle>
+            <Card className="border border-border/80 bg-card">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-semibold">Related Threat Vectors</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="space-y-2">
+              <CardContent className="space-y-1.5">
+                {[
+                  { id: "ai-powered-phishing", name: "AI-Generated Social Engineering", cat: "Phishing" },
+                  { id: "supply-chain-attacks", name: "Open-Source Supply Chain Poisoning", cat: "APT" },
+                  { id: "business-email-compromise", name: "Executive Impersonation & BEC", cat: "Fraud" },
+                ].map((item) => (
                   <Button
+                    key={item.id}
                     variant="ghost"
                     size="sm"
-                    className="w-full justify-start h-auto p-2"
+                    className="w-full justify-start h-auto p-2 text-left hover:bg-muted/50 rounded-lg"
                     asChild
                   >
-                    <Link to="/threats/ai-powered-phishing">
-                      <div className="text-left">
-                        <div className="font-medium text-sm">
-                          AI-Powered Phishing
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          Social Engineering
-                        </div>
+                    <Link to={`/threats/${item.id}`}>
+                      <div>
+                        <p className="font-medium text-xs text-foreground">{item.name}</p>
+                        <p className="text-[10px] text-muted-foreground">{item.cat}</p>
                       </div>
                     </Link>
                   </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="w-full justify-start h-auto p-2"
-                    asChild
-                  >
-                    <Link to="/threats/supply-chain-attacks">
-                      <div className="text-left">
-                        <div className="font-medium text-sm">
-                          Supply Chain Attacks
-                        </div>
-                        <div className="text-xs text-muted-foreground">APT</div>
-                      </div>
-                    </Link>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="w-full justify-start h-auto p-2"
-                    asChild
-                  >
-                    <Link to="/threats/business-email-compromise">
-                      <div className="text-left">
-                        <div className="font-medium text-sm">
-                          Business Email Compromise
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          Social Engineering
-                        </div>
-                      </div>
-                    </Link>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Threat Statistics */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Threat Statistics</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span>Global Impact</span>
-                    <span className="font-bold">High</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span>Detection Rate</span>
-                    <span className="font-bold">65%</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span>Average Damage</span>
-                    <span className="font-bold">$2.4M</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span>Recovery Time</span>
-                    <span className="font-bold">21 days</span>
-                  </div>
-                </div>
+                ))}
               </CardContent>
             </Card>
           </div>

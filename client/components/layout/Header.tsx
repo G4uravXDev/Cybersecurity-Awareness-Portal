@@ -31,12 +31,17 @@ export function Header() {
     return "Cybersecurity Portal";
   };
 
+  const isActiveRoute = (href: string) => {
+    if (href === "/") return location.pathname === "/";
+    return location.pathname.startsWith(href);
+  };
+
   useEffect(() => {
     const theme = localStorage.getItem("theme");
-    if (
-      theme === "dark" ||
-      (!theme && window.matchMedia("(prefers-color-scheme: dark)").matches)
-    ) {
+    if (theme === "light") {
+      setIsDark(false);
+      document.documentElement.classList.remove("dark");
+    } else {
       setIsDark(true);
       document.documentElement.classList.add("dark");
     }
@@ -70,46 +75,51 @@ export function Header() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl">
       <div className="container flex h-16 items-center justify-between px-4">
         {/* Logo */}
-        <Link to="/" className="flex items-center space-x-2">
-          <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary">
-            <Shield className="h-6 w-6 text-primary-foreground" />
+        <Link to="/" className="flex items-center space-x-2.5 group">
+          <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/25 flex items-center justify-center text-primary group-hover:scale-105 transition-transform shadow-sm">
+            <Shield className="h-4 w-4" />
           </div>
-          <div>
-            <span className="text-xl font-bold text-foreground">
-              {getPageTitle(location.pathname)}
-            </span>
-          </div>
+          <span className="text-base font-bold tracking-tight text-foreground">
+            CyberSafe
+          </span>
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-6">
+        <nav className="hidden md:flex items-center space-x-1">
           {navItems.map((item) => (
             <Link
               key={item.name}
               to={item.href}
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+              className={`relative px-3 py-2 text-sm transition-colors duration-200 hover:text-foreground ${
+                isActiveRoute(item.href)
+                  ? "text-foreground font-semibold"
+                  : "text-muted-foreground font-medium"
+              }`}
             >
               {item.name}
+              {isActiveRoute(item.href) && (
+                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-0.5 rounded-full bg-primary animate-scale-in" />
+              )}
             </Link>
           ))}
         </nav>
 
         {/* Right side */}
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-1">
           {/* Theme toggle */}
           <Button
             variant="ghost"
             size="sm"
             onClick={toggleTheme}
-            className="w-9 h-9 p-0"
+            className="w-10 h-10 p-0 rounded-full hover:bg-muted/80 transition-colors duration-200"
           >
             {isDark ? (
-              <Sun className="h-4 w-4" />
+              <Sun className="h-[18px] w-[18px] text-muted-foreground transition-transform duration-200 hover:rotate-45" />
             ) : (
-              <Moon className="h-4 w-4" />
+              <Moon className="h-[18px] w-[18px] text-muted-foreground transition-transform duration-200 hover:-rotate-12" />
             )}
           </Button>
 
@@ -117,12 +127,16 @@ export function Header() {
           <div className="hidden sm:block">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm">
-                  <User className="h-4 w-4 mr-2" />
-                  {user?.name || "User"}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-10 px-3 rounded-full hover:bg-muted/80 transition-colors duration-200"
+                >
+                  <User className="h-4 w-4 mr-2 text-muted-foreground" />
+                  <span className="text-sm font-medium">{user?.name || "User"}</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+              <DropdownMenuContent align="end" className="w-48 animate-scale-in">
                 <DropdownMenuItem asChild>
                   <Link to="/dashboard">Dashboard</Link>
                 </DropdownMenuItem>
@@ -138,40 +152,44 @@ export function Header() {
           <Button
             variant="ghost"
             size="sm"
-            className="md:hidden w-9 h-9 p-0"
+            className="md:hidden w-10 h-10 p-0 rounded-full hover:bg-muted/80 transition-colors duration-200"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
-            <Menu className="h-4 w-4" />
+            <Menu className="h-[18px] w-[18px] text-muted-foreground" />
           </Button>
         </div>
       </div>
 
       {/* Mobile Navigation */}
       {isMenuOpen && (
-        <div className="md:hidden border-t bg-background">
+        <div className="md:hidden border-t border-border/40 bg-background/95 backdrop-blur-xl animate-fade-down">
           <div className="container py-4 px-4">
-            <nav className="flex flex-col space-y-3">
+            <nav className="flex flex-col space-y-1">
               {navItems.map((item) => (
                 <Link
                   key={item.name}
                   to={item.href}
-                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                  className={`px-3 py-2.5 rounded-lg text-sm transition-colors duration-200 hover:text-foreground hover:bg-muted/60 ${
+                    isActiveRoute(item.href)
+                      ? "text-foreground font-semibold bg-muted/40"
+                      : "text-muted-foreground font-medium"
+                  }`}
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {item.name}
                 </Link>
               ))}
-              <hr className="my-3" />
-              <div className="flex items-center space-x-2 text-sm">
-                <User className="h-4 w-4" />
-                <span>{user?.name}</span>
+              <hr className="my-2 border-border/40" />
+              <div className="flex items-center space-x-2 text-sm px-3 py-2">
+                <User className="h-4 w-4 text-muted-foreground" />
+                <span className="font-medium">{user?.name}</span>
                 <span className="text-muted-foreground">({user?.role})</span>
               </div>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleLogout}
-                className="justify-start"
+                className="justify-start px-3 hover:bg-muted/60 rounded-lg"
               >
                 <LogOut className="h-4 w-4 mr-2" />
                 Sign Out

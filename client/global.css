@@ -4,106 +4,99 @@
 
 @layer base {
   /**
-   * CyberSafe Portal Theme
-   * Cybersecurity-focused color palette with blue and security-themed colors.
-   * Colors expressed as HSL values for Tailwind CSS.
-  */
+   * CyberSafe Portal Theme — Deep Midnight & Cobalt Blue
+   * Enterprise SOC / CrowdStrike aesthetic with deep navy slate and electric cobalt accents.
+   */
   :root {
-    --background: 0 0% 100%;
-    --foreground: 220 15% 12%;
+    --background: 216 33% 98%;
+    --foreground: 222 47% 11%;
 
     --card: 0 0% 100%;
-    --card-foreground: 220 15% 12%;
+    --card-foreground: 222 47% 11%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 15% 12%;
+    --popover-foreground: 222 47% 11%;
 
-    --primary: 214 84% 56%;
-    --primary-foreground: 0 0% 98%;
+    --primary: 221 83% 53%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 220 15% 12%;
+    --secondary: 214 32% 93%;
+    --secondary-foreground: 222 47% 11%;
 
-    --muted: 210 40% 96%;
+    --muted: 214 32% 93%;
     --muted-foreground: 215 16% 47%;
 
-    --accent: 214 32% 91%;
-    --accent-foreground: 220 15% 12%;
+    --accent: 217 91% 60%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive-foreground: 0 0% 100%;
 
     --warning: 38 92% 50%;
-    --warning-foreground: 0 0% 98%;
+    --warning-foreground: 0 0% 100%;
 
     --success: 142 76% 36%;
-    --success-foreground: 0 0% 98%;
+    --success-foreground: 0 0% 100%;
 
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 214 84% 56%;
+    --border: 214 32% 88%;
+    --input: 214 32% 88%;
+    --ring: 221 83% 53%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: 216 33% 96%;
+    --sidebar-foreground: 222 47% 11%;
+    --sidebar-primary: 221 83% 53%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 214 32% 91%;
+    --sidebar-accent-foreground: 222 47% 11%;
+    --sidebar-border: 214 32% 88%;
+    --sidebar-ring: 221 83% 53%;
   }
 
   .dark {
-    --background: 220 27% 8%;
-    --foreground: 210 40% 98%;
+    --background: 224 71% 4%;
+    --foreground: 213 31% 94%;
 
-    --card: 220 27% 10%;
-    --card-foreground: 210 40% 98%;
+    --card: 224 55% 7%;
+    --card-foreground: 213 31% 94%;
 
-    --popover: 220 27% 10%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 224 55% 7%;
+    --popover-foreground: 213 31% 94%;
 
-    --primary: 214 84% 56%;
-    --primary-foreground: 220 27% 8%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 224 71% 4%;
 
-    --secondary: 220 27% 15%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 222 36% 14%;
+    --secondary-foreground: 213 31% 94%;
 
-    --muted: 220 27% 15%;
+    --muted: 222 36% 12%;
     --muted-foreground: 215 20% 65%;
 
-    --accent: 220 27% 15%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 217 91% 60%;
+    --accent-foreground: 213 31% 94%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
 
     --warning: 38 92% 50%;
-    --warning-foreground: 220 27% 8%;
+    --warning-foreground: 224 71% 4%;
 
-    --success: 142 76% 36%;
-    --success-foreground: 210 40% 98%;
+    --success: 158 64% 52%;
+    --success-foreground: 224 71% 4%;
 
-    --border: 220 27% 15%;
-    --input: 220 27% 15%;
-    --ring: 214 84% 56%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --border: 222 30% 16%;
+    --input: 222 30% 16%;
+    --ring: 217 91% 60%;
+
+    --sidebar-background: 224 71% 5%;
+    --sidebar-foreground: 213 31% 94%;
+    --sidebar-primary: 217 91% 60%;
+    --sidebar-primary-foreground: 224 71% 4%;
+    --sidebar-accent: 222 36% 12%;
+    --sidebar-accent-foreground: 213 31% 94%;
+    --sidebar-border: 222 30% 16%;
+    --sidebar-ring: 217 91% 60%;
   }
 }
 
@@ -113,6 +106,73 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased selection:bg-primary/20 selection:text-primary;
+  }
+
+  /* Smooth micro-transitions on all interactive controls */
+  a, button, input, select, textarea, [role="button"] {
+    @apply transition-all duration-200 ease-out;
+  }
+}
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fade-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .animate-fade-up {
+    animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .animate-fade-down {
+    animation: fade-down 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .animate-scale-in {
+    animation: scale-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .animate-slide-in-right {
+    animation: slide-in-right 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .animate-slide-in-left {
+    animation: slide-in-left 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  /* Stagger delay classes */
+  .delay-100 {
+    animation-delay: 100ms;
+  }
+
+  .delay-200 {
+    animation-delay: 200ms;
+  }
+
+  .delay-300 {
+    animation-delay: 300ms;
+  }
+
+  .delay-400 {
+    animation-delay: 400ms;
+  }
+
+  .delay-500 {
+    animation-delay: 500ms;
+  }
+
+  /* Cyber Glow & Glass Utilities */
+  .glow-cobalt {
+    box-shadow: 0 0 30px -5px rgba(59, 130, 246, 0.3);
+  }
+
+  .glow-cobalt-sm {
+    box-shadow: 0 0 15px -3px rgba(59, 130, 246, 0.25);
+  }
+
+  .glass-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
   }
 }

@@ -3601,160 +3601,6 @@ This case shows consequences of inadequate vulnerability management.`,
                   "Vulnerability management tool comparisons",
                 ],
               },
-            ],
-          },
-        ],
-      },
-      "security-architecture": {
-        modules: [
-          {
-            id: "module-1",
-            title: "Enterprise Security Architecture Design",
-            description:
-              "Strategic security architecture design for complex enterprise environments",
-            lessons: [
-              {
-                id: "lesson-1-1",
-                title: "Security Architecture Frameworks and Principles",
-                duration: "110 min",
-                type: "design",
-                content:
-                  "Design comprehensive security architectures using industry frameworks",
-                detailedContent: `Security architecture provides blueprint for enterprise security:
-
-SECURITY ARCHITECTURE PRINCIPLES:
-- Defense in depth and layered security
-- Zero trust architecture and continuous verification
-- Least privilege and need-to-know access
-- Separation of duties and dual control
-- Fail-safe defaults and secure by design
-
-ENTERPRISE ARCHITECTURE INTEGRATION:
-- TOGAF framework integration and alignment
-- Business capability mapping and analysis
-- Technology stack assessment and rationalization
-- Security requirements traceability
-- Architecture governance and review processes
-
-THREAT MODELING AND RISK ASSESSMENT:
-- STRIDE threat modeling methodology
-- Attack surface analysis and reduction
-- Risk-based architecture decisions
-- Security control effectiveness assessment
-- Residual risk acceptance and documentation
-
-TECHNOLOGY ARCHITECTURE:
-- Identity and access management (IAM) design
-- Network security architecture and segmentation
-- Data protection and encryption strategies
-- Cloud security architecture patterns
-- Integration security and API protection
-
-CASE STUDY - TARGET PAYMENT CARD BREACH:
-Major retailer security architecture failures:
-- Network segmentation inadequacy
-- Privileged access management weaknesses
-- Monitoring and detection capability gaps
-- Third-party vendor access controls
-- 40+ million payment cards compromised
-
-This case demonstrates importance of comprehensive security architecture.`,
-                keyPoints: [
-                  "Architecture frameworks provide systematic approach",
-                  "Security principles guide design decisions",
-                  "Threat modeling identifies architecture weaknesses",
-                  "Integration with enterprise architecture essential",
-                ],
-                practicalExamples: [
-                  "Enterprise security architecture design workshop",
-                  "Threat modeling using Microsoft Threat Modeling Tool",
-                  "Security control mapping and gap analysis",
-                  "Reference architecture development",
-                ],
-                resources: [
-                  "SABSA Security Architecture Framework",
-                  "TOGAF Enterprise Architecture methodology",
-                  "NIST Cybersecurity Framework",
-                  "Cloud Security Alliance reference architectures",
-                ],
-              },
-            ],
-          },
-        ],
-      },
-      "vulnerability-management": {
-        modules: [
-          {
-            id: "module-1",
-            title: "Enterprise Vulnerability Management Program",
-            description:
-              "Comprehensive vulnerability management lifecycle and program implementation",
-            lessons: [
-              {
-                id: "lesson-1-1",
-                title: "Vulnerability Management Lifecycle",
-                duration: "95 min",
-                type: "hands-on",
-                content:
-                  "End-to-end vulnerability management program design and implementation",
-                detailedContent: `Effective vulnerability management requires systematic approach:
-
-DISCOVERY AND ASSET INVENTORY:
-- Network discovery and asset classification
-- Software inventory and version tracking
-- Cloud asset discovery and monitoring
-- Shadow IT identification and management
-- Configuration management database (CMDB) integration
-
-VULNERABILITY ASSESSMENT:
-- Automated scanning tools and techniques
-- Manual testing and validation
-- Threat intelligence integration
-- Risk scoring and prioritization
-- False positive identification and management
-
-RISK ANALYSIS AND PRIORITIZATION:
-- Common Vulnerability Scoring System (CVSS)
-- Exploit prediction scoring systems (EPSS)
-- Business impact assessment
-- Asset criticality weighting
-- Threat landscape integration
-
-REMEDIATION AND TRACKING:
-- Patch management processes and automation
-- Compensating controls for unpatchable systems
-- Service level agreements and timelines
-- Progress tracking and reporting
-- Metrics and key performance indicators
-
-CASE STUDY - WANNACRY GLOBAL IMPACT:
-Ransomware exploited unpatched vulnerability at global scale:
-- MS17-010 SMB vulnerability in Windows systems
-- Organizations with poor patch management severely affected
-- Healthcare systems disrupted globally
-- Economic impact exceeding $4 billion
-- Demonstrated critical importance of timely patching
-
-This case shows consequences of inadequate vulnerability management.`,
-                keyPoints: [
-                  "Asset discovery foundation for effective program",
-                  "Risk-based prioritization optimizes resources",
-                  "Automation essential for scale and consistency",
-                  "Metrics demonstrate program effectiveness",
-                ],
-                practicalExamples: [
-                  "Nessus vulnerability scanning and analysis",
-                  "OpenVAS open-source vulnerability assessment",
-                  "Vulnerability database integration and correlation",
-                  "Risk scoring matrix development",
-                ],
-                resources: [
-                  "NIST SP 800-40 Patch Management Guide",
-                  "SANS Vulnerability Management Maturity Model",
-                  "CVE and CVSS documentation",
-                  "Vulnerability management tool comparisons",
-                ],
-              },
               {
                 id: "lesson-1-2",
                 title: "Advanced Scanning Techniques and Tool Integration",
@@ -7704,7 +7550,6 @@ METRICS AND REPORTING:
                                     <span>{lesson.duration}</span>
                                     <Badge
                                       variant="outline"
-                                      size="sm"
                                       className="ml-2"
                                     >
                                       {lesson.type}
@@ -7820,7 +7665,6 @@ METRICS AND REPORTING:
                               </h4>
                               <Badge
                                 variant="destructive"
-                                size="sm"
                                 className="mt-2"
                               >
                                 Real-World Case Study
@@ -7867,7 +7711,6 @@ METRICS AND REPORTING:
                               <h4 className="font-semibold">{threat.name}</h4>
                               <Badge
                                 variant="destructive"
-                                size="sm"
                                 className="mt-1"
                               >
                                 {threat.severity}
@@ -7893,7 +7736,6 @@ METRICS AND REPORTING:
                                   <Badge
                                     key={sector}
                                     variant="secondary"
-                                    size="sm"
                                   >
                                     {sector}
                                   </Badge>

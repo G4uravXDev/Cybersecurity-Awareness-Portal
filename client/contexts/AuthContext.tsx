@@ -5,18 +5,23 @@ import {
   signInWithPopup,
   signOut,
   onAuthStateChanged,
-  User as FirebaseUser,
   updateProfile,
 } from "firebase/auth";
-import { auth, googleProvider } from "@/lib/firebase";
+import {
+  auth,
+  googleProvider,
+  isFirebaseConfigured,
+  getFriendlyFirebaseErrorMessage,
+} from "@/lib/firebase";
 
-interface User {
+export interface User {
   id: string;
   email: string;
   name: string;
   role: "user" | "admin";
   enrolledCourses: string[];
   firebaseUid?: string;
+  avatarUrl?: string;
 }
 
 interface AuthContextType {
@@ -30,7 +35,7 @@ interface AuthContextType {
   ) => Promise<void>;
   signupWithGoogle: () => Promise<void>;
   loginWithGoogle: () => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
   isLoading: boolean;
   enrollInCourse: (courseId: string) => void;
   isEnrolledInCourse: (courseId: string) => boolean;
@@ -52,35 +57,61 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Firebase auth state listener
+  // Auth state listener
   useEffect(() => {
+    // If Firebase credentials are still placeholders in .env, operate in local session mode
+    if (!isFirebaseConfigured()) {
+      const savedUser = localStorage.getItem("user");
+      if (savedUser) {
+        try {
+          setUser(JSON.parse(savedUser));
+        } catch {
+          localStorage.removeItem("user");
+        }
+      }
+      setIsLoading(false);
+      return;
+    }
+
+    // When configured with live Firebase, listen to Firebase Auth events
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser) {
-        // Create user object from Firebase user
+        const storedCoursesKey = `enrolledCourses_${firebaseUser.uid}`;
+        const localEnrolled: string[] = JSON.parse(
+          localStorage.getItem(storedCoursesKey) || "[]",
+        );
+
         const userData: User = {
           id: firebaseUser.uid,
           firebaseUid: firebaseUser.uid,
           email: firebaseUser.email || "",
-          name: firebaseUser.displayName || "",
+          name:
+            firebaseUser.displayName ||
+            firebaseUser.email?.split("@")[0] ||
+            "SecOps Defender",
           role: "user",
-          enrolledCourses: JSON.parse(
-            localStorage.getItem(`enrolledCourses_${firebaseUser.uid}`) || "[]",
-          ),
+          enrolledCourses: localEnrolled,
+          avatarUrl: firebaseUser.photoURL || undefined,
         };
         setUser(userData);
         localStorage.setItem("user", JSON.stringify(userData));
       } else {
-        // Check for existing demo session
         const savedUser = localStorage.getItem("user");
         if (savedUser) {
-          const userData = JSON.parse(savedUser);
-          // Only keep demo users if no Firebase user
-          if (userData.id === "demo" || userData.id === "admin") {
-            if (!userData.enrolledCourses) {
-              userData.enrolledCourses = [];
+          try {
+            const userData: User = JSON.parse(savedUser);
+            // Retain local demo / test sessions if no Firebase session exists
+            if (
+              userData.id === "demo" ||
+              userData.id === "admin" ||
+              userData.id === "google-demo-user"
+            ) {
+              setUser(userData);
+            } else {
+              setUser(null);
+              localStorage.removeItem("user");
             }
-            setUser(userData);
-          } else {
+          } catch {
             setUser(null);
             localStorage.removeItem("user");
           }
@@ -100,28 +131,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   ): Promise<boolean> => {
     setIsLoading(true);
     try {
-      // Demo user login
+      // Demo user credentials
       if (username === "user" && password === "user") {
-        const demoUser = {
+        const demoUser: User = {
           id: "demo",
           email: "user@cybersafe.com",
-          name: "Demo User",
-          role: "user" as const,
-          enrolledCourses: [],
+          name: "SecOps Analyst",
+          role: "user",
+          enrolledCourses: JSON.parse(
+            localStorage.getItem("enrolledCourses_demo") || '["course-1", "course-13"]',
+          ),
         };
         setUser(demoUser);
         localStorage.setItem("user", JSON.stringify(demoUser));
         return true;
       }
 
-      // Admin login
+      // Admin credentials
       if (username === "admin" && password === "admin") {
-        const adminUser = {
+        const adminUser: User = {
           id: "admin",
           email: "admin@cybersafe.com",
-          name: "Administrator",
-          role: "admin" as const,
-          enrolledCourses: [],
+          name: "Security Director",
+          role: "admin",
+          enrolledCourses: JSON.parse(
+            localStorage.getItem("enrolledCourses_admin") || '["course-1", "course-2", "course-13"]',
+          ),
         };
         setUser(adminUser);
         localStorage.setItem("user", JSON.stringify(adminUser));
@@ -138,10 +173,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const loginWithEmail = async (email: string, password: string) => {
+    if (!isFirebaseConfigured()) {
+      console.info("Firebase is unconfigured; logging in via simulated credentials.");
+      const demoEmailUser: User = {
+        id: `user-${Date.now()}`,
+        email: email,
+        name: email.split("@")[0],
+        role: "user",
+        enrolledCourses: [],
+      };
+      setUser(demoEmailUser);
+      localStorage.setItem("user", JSON.stringify(demoEmailUser));
+      return;
+    }
+
     try {
       await signInWithEmailAndPassword(auth, email, password);
     } catch (error: any) {
-      throw new Error(error.message || "Failed to sign in");
+      throw new Error(getFriendlyFirebaseErrorMessage(error));
     }
   };
 
@@ -150,67 +199,119 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     password: string,
     name: string,
   ) => {
+    if (!isFirebaseConfigured()) {
+      console.info("Firebase is unconfigured; registering via simulated credentials.");
+      const demoEmailUser: User = {
+        id: `user-${Date.now()}`,
+        email: email,
+        name: name || email.split("@")[0],
+        role: "user",
+        enrolledCourses: [],
+      };
+      setUser(demoEmailUser);
+      localStorage.setItem("user", JSON.stringify(demoEmailUser));
+      return;
+    }
+
     try {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
         password,
       );
-      await updateProfile(userCredential.user, { displayName: name });
+      if (userCredential.user) {
+        await updateProfile(userCredential.user, { displayName: name });
+      }
     } catch (error: any) {
-      throw new Error(error.message || "Failed to create account");
-    }
-  };
-
-  const signupWithGoogle = async () => {
-    try {
-      await signInWithPopup(auth, googleProvider);
-    } catch (error: any) {
-      throw new Error(error.message || "Failed to sign up with Google");
+      throw new Error(getFriendlyFirebaseErrorMessage(error));
     }
   };
 
   const loginWithGoogle = async () => {
-    try {
-      await signInWithPopup(auth, googleProvider);
-    } catch (error: any) {
-      throw new Error(error.message || "Failed to sign in with Google");
+    // If real Firebase keys are not in .env yet, provide an instant simulation so authentication works immediately
+    if (!isFirebaseConfigured()) {
+      console.info("Simulated Google Sign-in activated (No valid Firebase API key detected in .env)");
+      const googleUser: User = {
+        id: "google-demo-user",
+        firebaseUid: "google-demo-uid-7890",
+        email: "alex.defender@gmail.com",
+        name: "Alex Morgan",
+        role: "user",
+        enrolledCourses: JSON.parse(
+          localStorage.getItem("enrolledCourses_google-demo-uid-7890") || '["course-1", "course-13"]',
+        ),
+      };
+      setUser(googleUser);
+      localStorage.setItem("user", JSON.stringify(googleUser));
+      return;
     }
+
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      if (result.user) {
+        const storedCoursesKey = `enrolledCourses_${result.user.uid}`;
+        const localEnrolled: string[] = JSON.parse(
+          localStorage.getItem(storedCoursesKey) || "[]",
+        );
+
+        const userData: User = {
+          id: result.user.uid,
+          firebaseUid: result.user.uid,
+          email: result.user.email || "",
+          name:
+            result.user.displayName ||
+            result.user.email?.split("@")[0] ||
+            "SecOps Defender",
+          role: "user",
+          enrolledCourses: localEnrolled,
+          avatarUrl: result.user.photoURL || undefined,
+        };
+        setUser(userData);
+        localStorage.setItem("user", JSON.stringify(userData));
+      }
+    } catch (error: any) {
+      console.error("Firebase Google Sign-In error:", error);
+      throw new Error(getFriendlyFirebaseErrorMessage(error));
+    }
+  };
+
+  const signupWithGoogle = async () => {
+    await loginWithGoogle();
   };
 
   const logout = async () => {
     try {
-      if (auth.currentUser) {
+      if (isFirebaseConfigured() && auth.currentUser) {
         await signOut(auth);
       }
+    } catch (error) {
+      console.warn("Logout warning:", error);
+    } finally {
       setUser(null);
       localStorage.removeItem("user");
-    } catch (error: any) {
-      console.error("Logout error:", error);
     }
   };
 
   const enrollInCourse = (courseId: string) => {
-    if (user && !user.enrolledCourses.includes(courseId)) {
-      const updatedUser = {
+    if (!user) return;
+    if (!user.enrolledCourses.includes(courseId)) {
+      const updatedUser: User = {
         ...user,
         enrolledCourses: [...user.enrolledCourses, courseId],
       };
       setUser(updatedUser);
       localStorage.setItem("user", JSON.stringify(updatedUser));
 
-      // Store enrolled courses separately for Firebase users
-      if (user.firebaseUid) {
-        localStorage.setItem(
-          `enrolledCourses_${user.firebaseUid}`,
-          JSON.stringify(updatedUser.enrolledCourses),
-        );
-      }
+      const storageId = user.firebaseUid || user.id;
+      localStorage.setItem(
+        `enrolledCourses_${storageId}`,
+        JSON.stringify(updatedUser.enrolledCourses),
+      );
     }
   };
 
   const isEnrolledInCourse = (courseId: string): boolean => {
-    return user?.enrolledCourses.includes(courseId) || false;
+    return user?.enrolledCourses?.includes(courseId) || false;
   };
 
   const value = {
